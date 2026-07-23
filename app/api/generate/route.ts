@@ -1,5 +1,6 @@
 // app/api/generate/route.ts — The ONLY place that calls the LLM.
-// Reads GEMINI_API_KEY from process.env (server-only).
+// Supports multi-provider fallback: OpenRouter (google/gemini-2.5-flash) -> Gemini Direct (gemini-2.0-flash).
+// Reads API keys from process.env (server-only).
 // Validates all model output through parseDeck before returning to client.
 
 import { NextRequest, NextResponse } from "next/server";
@@ -12,7 +13,44 @@ function isValidMode(v: unknown): v is DeckMode {
   return v === "flashcards" || v === "quiz";
 }
 
-// ─── Gemini API call ─────────────────────────────────────────────────
+// ─── Provider: OpenRouter (google/gemini-2.5-flash) ──────────────────
+
+async function callOpenRouter(prompt: string, apiKey: string): Promise<string> {
+  const url = "https://openrouter.ai/api/v1/chat/completions";
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer": "http://localhost:3000",
+      "X-Title": "Study Assistant",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 2000,
+    }),
+  });
+
+  if (!res.ok) {
+    if (res.status === 429) {
+      throw new Error("RATE_LIMIT");
+    }
+    throw new Error(`PROVIDER_ERROR: ${res.status}`);
+  }
+
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  if (typeof text !== "string") {
+    throw new Error("PROVIDER_ERROR: no text in OpenRouter response");
+  }
+
+  return text;
+}
+
+// ─── Provider: Gemini Direct (gemini-2.0-flash) ──────────────────────
 
 const GEMINI_MODEL = "gemini-2.0-flash";
 
@@ -28,7 +66,6 @@ async function callGemini(prompt: string, apiKey: string): Promise<string> {
   });
 
   if (!res.ok) {
-    // Distinguish rate-limit from other provider errors
     if (res.status === 429) {
       throw new Error("RATE_LIMIT");
     }
@@ -36,24 +73,45 @@ async function callGemini(prompt: string, apiKey: string): Promise<string> {
   }
 
   const data = await res.json();
-
-  // Extract text from Gemini response
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (typeof text !== "string") {
-    throw new Error("PROVIDER_ERROR: no text in response");
+    throw new Error("PROVIDER_ERROR: no text in Gemini response");
   }
 
   return text;
+}
+
+// ─── Multi-provider call: OpenRouter -> Gemini Direct fallback ────────
+
+async function callLLM(prompt: string): Promise<string> {
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  // 1. Primary: OpenRouter (google/gemini-2.5-flash)
+  if (openRouterKey) {
+    try {
+      return await callOpenRouter(prompt, openRouterKey);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(`OpenRouter failed (${msg}), trying Gemini direct fallback...`);
+    }
+  }
+
+  // 2. Fallback: Gemini Direct
+  if (geminiKey) {
+    return await callGemini(prompt, geminiKey);
+  }
+
+  throw new Error("NO_API_KEY");
 }
 
 // ─── POST handler ────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   try {
-    // Validate API key
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error("GEMINI_API_KEY is not set in environment variables");
+    // Validate at least one API key exists
+    if (!process.env.OPENROUTER_API_KEY && !process.env.GEMINI_API_KEY) {
+      console.error("No API keys configured");
       return NextResponse.json(
         { kind: "provider_error", message: "API key not configured" },
         { status: 500 }
@@ -87,9 +145,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build prompt and call Gemini
+    // Build prompt and call LLM (OpenRouter -> Gemini Direct)
     const prompt = buildPrompt(topic.trim(), mode);
-    const rawText = await callGemini(prompt, apiKey);
+    const rawText = await callLLM(prompt);
 
     // Validate model output through parseDeck — never trust raw output
     const result = parseDeck(rawText);
@@ -118,7 +176,13 @@ export async function POST(request: NextRequest) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("API route error:", message);
 
-    // Map known error types to specific kinds
+    if (message === "NO_API_KEY") {
+      return NextResponse.json(
+        { kind: "provider_error", message: "No API key configured" },
+        { status: 500 }
+      );
+    }
+
     if (message === "RATE_LIMIT") {
       return NextResponse.json(
         { kind: "rate_limit", message: "Rate limited by AI provider — try again in a moment" },
