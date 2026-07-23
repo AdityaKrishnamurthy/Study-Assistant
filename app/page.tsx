@@ -7,6 +7,7 @@ import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
 import EmptyState from "@/components/EmptyState";
 import FlashcardDeck from "@/components/FlashcardDeck";
+import QuizDeck from "@/components/QuizDeck";
 import { generateDeck, type ClientErrorKind } from "@/lib/client";
 import type { Deck } from "@/lib/schema";
 import type { DeckMode } from "@/lib/prompt";
@@ -126,30 +127,7 @@ export default function Home() {
           deck.mode === "flashcards" ? (
             <FlashcardDeck deck={deck} onReset={handleReset} />
           ) : (
-            <div className="w-full max-w-3xl bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-6 sm:p-8 space-y-6 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div>
-                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
-                    ❓ Quiz Deck
-                  </span>
-                  <h2 className="text-2xl font-bold text-white tracking-tight mt-1">{deck.topic}</h2>
-                </div>
-                <button
-                  onClick={handleReset}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-md shadow-indigo-600/20"
-                >
-                  Create Another
-                </button>
-              </div>
-
-              <div className="bg-slate-950/80 rounded-xl p-4 border border-slate-800/80 font-mono text-xs text-slate-300 overflow-x-auto max-h-[400px]">
-                <div className="flex justify-between items-center text-slate-500 pb-2 mb-2 border-b border-slate-900">
-                  <span>QUIZ CONTRACT PREVIEW (PLAN 005 WILL RENDER INTERACTIVE QUIZ)</span>
-                  <span>{deck.questions.length} questions</span>
-                </div>
-                <pre>{JSON.stringify(deck, null, 2)}</pre>
-              </div>
-            </div>
+            <QuizDeck deck={deck} onReset={handleReset} />
           )
         )}
       </div>
