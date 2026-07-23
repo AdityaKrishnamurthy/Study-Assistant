@@ -54,13 +54,13 @@ export default function Flashcard({
             </button>
           </div>
 
-          <div className="my-auto py-4 text-center">
+          <div className="my-auto py-2 text-center overflow-y-auto max-h-[180px] sm:max-h-[220px] break-words custom-scrollbar">
             <h3 className="text-xl sm:text-2xl font-bold text-white leading-relaxed tracking-tight">
               {card.front}
             </h3>
           </div>
 
-          <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400 animate-pulse">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400 animate-pulse pt-2 shrink-0">
             <span>🔄</span>
             <span>Click or press Space to flip</span>
           </div>
@@ -89,7 +89,7 @@ export default function Flashcard({
             </button>
           </div>
 
-          <div className="my-auto py-4 text-center">
+          <div className="my-auto py-2 text-center overflow-y-auto max-h-[180px] sm:max-h-[220px] break-words custom-scrollbar">
             <p className="text-lg sm:text-xl font-medium text-slate-100 leading-relaxed">
               {card.back}
             </p>
