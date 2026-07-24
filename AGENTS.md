@@ -55,7 +55,7 @@ Stop and ask the user (don't just pick something) if:
 - Commits are milestone-based: trigger a commit when a step group's own
   stated verification passes, not on a timer.
 - Commit message format: `<plan-number>: <short description>`, e.g.
-  `002: add deck schema + parseDeck validator`.
+  `007: add complete README with setup, usage, AI-usage note, and time audit`. Do NOT include "Step Group" or "Step Group X" in commit messages.
 - If something breaks mid-plan and can't be fixed quickly, STOP and ask
   me before running `git reset --hard` or discarding any work. Propose
   the revert, don't execute it unprompted.
