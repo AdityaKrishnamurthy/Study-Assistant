@@ -1,13 +1,14 @@
-// app/page.tsx — Main Study Assistant Page with state machine & race-condition protection
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
+import { BookOpen, RotateCcw } from "lucide-react";
 import InputScreen from "@/components/InputScreen";
 import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
 import EmptyState from "@/components/EmptyState";
 import FlashcardDeck from "@/components/FlashcardDeck";
 import QuizDeck from "@/components/QuizDeck";
+import ThemeToggle from "@/components/ThemeToggle";
 import { generateDeck, type ClientErrorKind } from "@/lib/client";
 import type { Deck } from "@/lib/schema";
 import type { DeckMode } from "@/lib/prompt";
@@ -18,30 +19,20 @@ export default function Home() {
   const [status, setStatus] = useState<AppStatus>("idle");
   const [deck, setDeck] = useState<Deck | null>(null);
   const [errorKind, setErrorKind] = useState<ClientErrorKind>("network");
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const [lastTopic, setLastTopic] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [lastTopic, setLastTopic] = useState("");
   const [lastMode, setLastMode] = useState<DeckMode>("flashcards");
-
-  // Monotonically increasing requestId ref to prevent race conditions per DESIGN.md
-  const latestRequestIdRef = useRef<number>(0);
+  const latestRequestIdRef = useRef(0);
 
   const handleGenerate = async (topic: string, mode: DeckMode) => {
-    // Increment request ID for stale response protection
     const requestId = ++latestRequestIdRef.current;
-
     setLastTopic(topic);
     setLastMode(mode);
     setStatus("loading");
 
     try {
       const result = await generateDeck(topic, mode);
-
-      // Race condition check: discard if a newer request was initiated
-      if (requestId !== latestRequestIdRef.current) {
-        console.warn(`Discarding stale response for request #${requestId} (latest is #${latestRequestIdRef.current})`);
-        return;
-      }
+      if (requestId !== latestRequestIdRef.current) return;
 
       if (result.ok) {
         setDeck(result.deck);
@@ -65,76 +56,60 @@ export default function Home() {
   };
 
   const handleRetry = () => {
-    if (lastTopic) {
-      handleGenerate(lastTopic, lastMode);
-    }
+    if (lastTopic) handleGenerate(lastTopic, lastMode);
   };
 
-  const handleReset = () => {
-    setStatus("idle");
-  };
+  const handleReset = () => setStatus("idle");
 
   return (
-    <main className="min-h-screen flex flex-col justify-between p-4 sm:p-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
-      {/* Header */}
-      <header className="w-full max-w-5xl mx-auto flex items-center justify-between py-4 mb-6 border-b border-slate-800/80">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={handleReset}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center text-lg font-bold text-white shadow-lg shadow-indigo-500/20">
-            📚
-          </div>
-          <span className="text-lg font-bold text-white tracking-tight">Study Assistant</span>
-        </div>
-
-        {status !== "idle" && (
+    <main className="flex min-h-screen flex-col bg-transparent text-[var(--fg)]">
+      <header className="w-full border-b border-[var(--border)] bg-[var(--bg-card)] shadow-[var(--shadow-sm)]">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <button
+            type="button"
             onClick={handleReset}
-            className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all"
+            className="flex min-h-11 items-center gap-3 rounded-[var(--radius-md)] text-left text-[var(--fg)]"
           >
-            ← New Deck
+            <span className="grid size-9 place-items-center rounded-[var(--radius-md)] bg-[var(--primary)] text-white">
+              <BookOpen size={19} aria-hidden="true" />
+            </span>
+            <span className="text-base font-semibold tracking-[-0.02em] sm:text-lg">Study Assistant</span>
           </button>
-        )}
+
+          <div className="flex items-center gap-2">
+            {status !== "idle" && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-card)] px-3 text-sm font-medium text-[var(--fg-muted)] transition-colors duration-150 hover:border-[var(--primary)] hover:text-[var(--primary)]"
+              >
+                <RotateCcw size={16} aria-hidden="true" />
+                <span className="hidden sm:inline">New deck</span>
+              </button>
+            )}
+            <ThemeToggle />
+          </div>
+        </div>
       </header>
 
-      {/* Main Content Area — Explicit rendering for each of the 4 core states */}
-      <div className="flex-1 flex items-center justify-center w-full max-w-5xl mx-auto my-auto py-6">
+      <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center px-4 py-4 sm:px-6 sm:py-6">
         {status === "idle" && (
-          <InputScreen
-            onGenerate={handleGenerate}
-            isLoading={false}
-            initialTopic={lastTopic}
-            initialMode={lastMode}
-          />
+          <div className="enter-fade flex w-full items-center justify-center">
+            <InputScreen onGenerate={handleGenerate} isLoading={false} initialTopic={lastTopic} initialMode={lastMode} />
+          </div>
         )}
-
-        {status === "loading" && (
-          <LoadingState mode={lastMode} />
-        )}
-
-        {status === "empty" && (
-          <EmptyState onRetry={handleRetry} onReset={handleReset} />
-        )}
-
-        {status === "error" && (
-          <ErrorState
-            kind={errorKind}
-            customMessage={errorMessage}
-            onRetry={handleRetry}
-            onReset={handleReset}
-          />
-        )}
-
+        {status === "loading" && <div className="enter-fade flex w-full items-center justify-center"><LoadingState mode={lastMode} /></div>}
+        {status === "empty" && <div className="enter-fade flex w-full items-center justify-center"><EmptyState onRetry={handleRetry} onReset={handleReset} /></div>}
+        {status === "error" && <div className="enter-fade flex w-full items-center justify-center"><ErrorState kind={errorKind} customMessage={errorMessage} onRetry={handleRetry} onReset={handleReset} /></div>}
         {status === "success" && deck && (
-          deck.mode === "flashcards" ? (
-            <FlashcardDeck deck={deck} onReset={handleReset} />
-          ) : (
-            <QuizDeck deck={deck} onReset={handleReset} />
-          )
+          <div className="enter-fade flex w-full items-center justify-center">
+            {deck.mode === "flashcards" ? <FlashcardDeck deck={deck} onReset={handleReset} /> : <QuizDeck deck={deck} onReset={handleReset} />}
+          </div>
         )}
-      </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="w-full max-w-5xl mx-auto text-center py-4 border-t border-slate-900 text-xs text-slate-600">
-        Study Assistant • AI-generated flashcards & quiz decks
+      <footer className="w-full border-t border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-center font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
+        Study Assistant
       </footer>
     </main>
   );

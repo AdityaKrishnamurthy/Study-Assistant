@@ -1,24 +1,189 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --bg: #f4f5f7;
+  --bg-card: #ffffff;
+  --bg-muted: #e8eaf0;
+  --bg-input: #f0f1f5;
+  --fg: #1c1f2e;
+  --fg-muted: #6b7280;
+  --primary: #3d5af1;
+  --primary-hover: #2d47d9;
+  --accent: #7c3aed;
+  --border: #d1d5e8;
+  --border-card: #e2e5f0;
+  --success: #0d7c4a;
+  --success-bg: #ecfdf5;
+  --error: #b91c1c;
+  --error-bg: #fef2f2;
+  --warning: #92400e;
+  --warning-bg: #fffbeb;
+
+  --shadow-sm: 0 1px 2px rgba(28, 31, 46, 0.06);
+  --shadow-md: 0 4px 12px rgba(28, 31, 46, 0.08), 0 1px 3px rgba(28, 31, 46, 0.06);
+  --shadow-lg: 0 8px 24px rgba(28, 31, 46, 0.12), 0 2px 6px rgba(28, 31, 46, 0.08);
+  --shadow-card: 0 2px 8px rgba(28, 31, 46, 0.07), 0 0 0 1px var(--border-card);
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --leading-tight: 1.25;
+  --leading-body: 1.5;
+  --leading-relaxed: 1.7;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.06em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-press: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+}
+
+[data-theme="dark"] {
+  --bg: #141720;
+  --bg-card: #1e2235;
+  --bg-muted: #252a40;
+  --bg-input: #1a1f30;
+  --fg: #e8eaf6;
+  --fg-muted: #8b93b0;
+  --primary: #6b8bff;
+  --primary-hover: #8ba3ff;
+  --accent: #a78bfa;
+  --border: #2e3450;
+  --border-card: #2a3048;
+  --success: #34d399;
+  --success-bg: #022c22;
+  --error: #f87171;
+  --error-bg: #2d1515;
+  --warning: #fbd38d;
+  --warning-bg: #2d2000;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--border-card);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  min-width: 320px;
+  background: var(--bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, rgba(61, 90, 241, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(61, 90, 241, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--fg);
+  font-family: var(--font-body), system-ui, sans-serif;
+  line-height: var(--leading-body);
+  transition: background-color var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out);
 }
 
-/* 3D Flip Card Animation Utilities */
+[data-theme="dark"] body {
+  background-image:
+    linear-gradient(to right, rgba(107, 139, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(107, 139, 255, 0.05) 1px, transparent 1px);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.enter-fade {
+  transition:
+    opacity var(--dur-normal) var(--ease-out),
+    transform var(--dur-normal) var(--ease-out);
+}
+
+.reveal-up {
+  animation: reveal-up var(--dur-normal) var(--ease-out) both;
+}
+
+.reveal-pop {
+  animation: reveal-pop 180ms var(--ease-spring) both;
+  transform-origin: right center;
+}
+
+@starting-style {
+  .enter-fade {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: reveal-up var(--dur-normal) var(--ease-out) both;
+}
+
 .perspective-1000 {
   perspective: 1000px;
 }
@@ -36,21 +201,37 @@ body {
   transform: rotateY(180deg);
 }
 
-.bg-size-200 {
-  background-size: 200% 200%;
+.custom-scrollbar {
+  scrollbar-color: color-mix(in srgb, var(--primary) 45%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
-/* Custom Scrollbar for Card Overflow */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.3);
-  border-radius: 4px;
+  background: color-mix(in srgb, var(--primary) 45%, transparent);
+  border-radius: var(--radius-full);
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.6);
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-press: 0ms;
+    --dur-fast: 0ms;
+    --dur-normal: 0ms;
+    --dur-slow: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
