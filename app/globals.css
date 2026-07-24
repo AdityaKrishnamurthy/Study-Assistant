@@ -93,7 +93,7 @@
   --color-background: var(--bg);
   --color-foreground: var(--fg);
   --font-sans: var(--font-body);
-  --font-mono: var(--font-mono);
+  --font-mono: var(--font-code);
 }
 
 * {
@@ -103,10 +103,11 @@
 html {
   min-width: 320px;
   background: var(--bg);
+  height: 100%;
 }
 
 body {
-  min-height: 100vh;
+  height: 100%;
   background-color: var(--bg);
   background-image:
     linear-gradient(to right, rgba(61, 90, 241, 0.06) 1px, transparent 1px),
@@ -127,6 +128,11 @@ body {
 button,
 textarea {
   font: inherit;
+}
+
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:focus-visible,

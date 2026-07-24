@@ -22,8 +22,8 @@ export default function InputScreen({ onGenerate, isLoading, initialTopic = "", 
   const isFlashcards = mode === "flashcards";
 
   return (
-    <div className="w-full max-w-2xl rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-6 shadow-[var(--shadow-lg)] sm:p-8">
-      <div className="mb-7 text-center">
+    <div className="w-full max-w-2xl rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-4 sm:p-6 lg:p-8 shadow-[var(--shadow-lg)]">
+      <div className="mb-5 sm:mb-7 text-center">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--primary)]">Study workspace</p>
         <h1 className="font-[var(--font-display)] text-3xl leading-[var(--leading-tight)] tracking-[var(--tracking-tight)] text-[var(--fg)] sm:text-4xl">
           Turn your notes into a study deck

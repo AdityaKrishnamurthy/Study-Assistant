@@ -62,15 +62,15 @@ export default function Home() {
   const handleReset = () => setStatus("idle");
 
   return (
-    <main className="flex min-h-screen flex-col bg-transparent text-[var(--fg)]">
-      <header className="w-full border-b border-[var(--border)] bg-[var(--bg-card)] shadow-[var(--shadow-sm)]">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+    <main className="flex h-full flex-col overflow-hidden bg-transparent text-[var(--fg)]">
+      <header className="w-full shrink-0 border-b border-[var(--border)] bg-[var(--bg-card)] shadow-[var(--shadow-sm)]">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-3 py-2 sm:px-6 sm:py-3">
           <button
             type="button"
             onClick={handleReset}
             className="flex min-h-11 items-center gap-3 rounded-[var(--radius-md)] text-left text-[var(--fg)]"
           >
-            <span className="grid size-9 place-items-center rounded-[var(--radius-md)] bg-[var(--primary)] text-white">
+            <span className="grid size-7 sm:size-9 place-items-center rounded-[var(--radius-md)] bg-[var(--primary)] text-white">
               <BookOpen size={19} aria-hidden="true" />
             </span>
             <span className="text-base font-semibold tracking-[-0.02em] sm:text-lg">Study Assistant</span>
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center px-4 py-4 sm:px-6 sm:py-6">
+      <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center overflow-y-auto overscroll-contain p-2 sm:p-4 lg:p-6">
         {status === "idle" && (
           <div className="enter-fade flex w-full items-center justify-center">
             <InputScreen onGenerate={handleGenerate} isLoading={false} initialTopic={lastTopic} initialMode={lastMode} />
@@ -102,13 +102,13 @@ export default function Home() {
         {status === "empty" && <div className="enter-fade flex w-full items-center justify-center"><EmptyState onRetry={handleRetry} onReset={handleReset} /></div>}
         {status === "error" && <div className="enter-fade flex w-full items-center justify-center"><ErrorState kind={errorKind} customMessage={errorMessage} onRetry={handleRetry} onReset={handleReset} /></div>}
         {status === "success" && deck && (
-          <div className="enter-fade flex w-full items-center justify-center">
+          <div className="enter-fade flex w-full h-full min-h-0 items-center justify-center">
             {deck.mode === "flashcards" ? <FlashcardDeck deck={deck} onReset={handleReset} /> : <QuizDeck deck={deck} onReset={handleReset} />}
           </div>
         )}
       </section>
 
-      <footer className="w-full border-t border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-center font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
+      <footer className="w-full shrink-0 border-t border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-center font-[var(--font-mono)] text-[11px] text-[var(--fg-muted)] sm:py-2.5 sm:text-xs">
         Study Assistant
       </footer>
     </main>

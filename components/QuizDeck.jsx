@@ -73,24 +73,24 @@ export default function QuizDeck({ deck, onReset }) {
   const isRetest = phase === "retest";
 
   return (
-    <div className="w-full max-w-2xl space-y-6">
-      <div className="flex flex-col items-start justify-between gap-4 rounded-[var(--radius-lg)] border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center">
-        <div>
+    <div className="flex flex-col h-full min-h-0 w-full max-w-2xl space-y-2 sm:space-y-3 lg:grid lg:h-full lg:min-h-0 lg:max-w-5xl lg:grid-cols-[minmax(14rem,17rem)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:gap-6 lg:space-y-0">
+      <div className="flex shrink-0 items-center justify-between gap-2 rounded-[var(--radius-lg)] border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 sm:px-4 sm:py-3 lg:col-span-2 lg:row-start-1 lg:h-fit">
+        <div className="min-w-0">
           <span className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] ${isRetest ? "text-[var(--warning)]" : "text-[var(--primary)]"}`}>
             {isRetest ? <RefreshCw size={14} aria-hidden="true" /> : <ListChecks size={14} aria-hidden="true" />}
             {isRetest ? "Retest phase" : "Quiz deck"}
           </span>
-          <h2 className="mt-1 font-[var(--font-display)] text-xl leading-[var(--leading-tight)] text-[var(--fg)]">{deck.topic}</h2>
+          <h2 className="mt-0.5 break-words font-[var(--font-display)] text-base font-medium leading-[var(--leading-tight)] text-[var(--fg)] sm:text-lg lg:text-xl">{deck.topic}</h2>
         </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-2 self-end sm:self-auto lg:self-stretch">
           {phase === "first-pass" && <span className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-muted)] px-3 py-2 font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">Score <span className="font-semibold text-[var(--primary)]">{firstPassScore}</span> / {currentIndex + (hasAnswered ? 1 : 0)}</span>}
           <button type="button" onClick={onReset} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-card)] px-3 text-xs font-semibold text-[var(--fg-muted)] transition-colors duration-150 hover:text-[var(--primary)]">Edit notes</button>
         </div>
       </div>
 
       {(phase === "first-pass" || phase === "retest") && (
-        <div className="space-y-6">
-          <div className="space-y-2">
+        <div className="flex-1 min-h-0 flex flex-col space-y-2 sm:space-y-3 lg:contents">
+          <div className="shrink-0 space-y-1.5 lg:col-start-1 lg:row-start-2 lg:self-start">
             <div className="flex items-center justify-between px-1 font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
               <span>{isRetest ? `Retest item ${currentIndex + 1} of ${totalQuestions}` : `Question ${currentIndex + 1} of ${totalQuestions}`}</span>
               <span>{progressPercent}%</span>
@@ -104,7 +104,7 @@ export default function QuizDeck({ deck, onReset }) {
       )}
 
       {phase === "summary" && (
-        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)]">
+        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)] lg:col-span-2 lg:max-h-full lg:self-center lg:overflow-y-auto">
           <div className="mx-auto grid size-20 place-items-center rounded-[var(--radius-full)] bg-[var(--bg-muted)] text-[var(--primary)]"><ListChecks size={40} aria-hidden="true" /></div>
           <div className="space-y-2">
             <h3 className="font-[var(--font-display)] text-2xl text-[var(--fg)]">Quiz complete</h3>
@@ -126,7 +126,7 @@ export default function QuizDeck({ deck, onReset }) {
       )}
 
       {phase === "done" && (
-        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--success)]/30 bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)]">
+        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--success)]/30 bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)] lg:col-span-2 lg:max-h-full lg:self-center lg:overflow-y-auto">
           <div className="mx-auto grid size-20 place-items-center rounded-[var(--radius-full)] border border-[var(--success)]/25 bg-[var(--success-bg)] text-[var(--success)]"><CircleCheck size={40} aria-hidden="true" /></div>
           <div className="space-y-2">
             <h3 className="font-[var(--font-display)] text-2xl text-[var(--fg)]">Retest complete</h3>

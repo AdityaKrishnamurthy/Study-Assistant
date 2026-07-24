@@ -27,7 +27,7 @@ export default function Flashcard({ card, isFlipped, onFlip, isTricky, onToggleT
   );
 
   return (
-    <div className="perspective-1000 mx-auto w-full max-w-xl">
+    <div className="perspective-1000 mx-auto w-full max-w-xl lg:col-start-2 lg:row-start-2 lg:self-center">
       <div
         onClick={onFlip}
         tabIndex={0}

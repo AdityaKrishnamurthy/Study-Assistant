@@ -93,11 +93,11 @@ async function callLLM(prompt: string): Promise<string> {
       return await callOpenRouter(prompt, openRouterKey);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.warn(`OpenRouter failed (${msg}), trying Gemini direct fallback...`);
+      console.warn(`OpenRouter failed (${msg}), trying Gemini Direct fallback...`);
     }
   }
 
-  // 2. Fallback: Gemini Direct
+  // 2. Fallback: Gemini Direct (gemini-2.0-flash)
   if (geminiKey) {
     return await callGemini(prompt, geminiKey);
   }

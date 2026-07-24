@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+
 import { DM_Serif_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -19,7 +19,7 @@ const body = Inter({
 });
 
 const mono = JetBrains_Mono({
-  variable: "--font-mono",
+  variable: "--font-code",
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
@@ -43,14 +43,26 @@ export default function RootLayout({
     >
       <head>
         {process.env.NODE_ENV === "development" && (
-          <Script
-            src="//unpkg.com/react-grab/dist/index.global.js"
-            crossOrigin="anonymous"
-            strategy="beforeInteractive"
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                  if (isLocal && !isMobile) {
+                    const script = document.createElement('script');
+                    script.src = '//unpkg.com/react-grab/dist/index.global.js';
+                    script.crossOrigin = 'anonymous';
+                    document.head.appendChild(script);
+                  }
+                })();
+              `
+            }}
           />
         )}
       </head>
-      <body className="min-h-full bg-[var(--bg)] text-[var(--fg)] selection:bg-[var(--primary)] selection:text-white">
+
+      <body className="h-full bg-[var(--bg)] text-[var(--fg)] selection:bg-[var(--primary)] selection:text-white">
         {children}
       </body>
     </html>

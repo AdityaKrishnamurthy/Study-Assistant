@@ -7,7 +7,13 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem("theme");
+    let storedTheme = null;
+    try {
+      storedTheme = window.localStorage.getItem("theme");
+    } catch {
+      // Theme selection still works when storage is unavailable.
+    }
+
     const initialTheme = storedTheme === "light" || storedTheme === "dark"
       ? storedTheme
       : window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -15,16 +21,19 @@ export default function ThemeToggle() {
         : "light";
 
     document.documentElement.dataset.theme = initialTheme;
-    window.localStorage.setItem("theme", initialTheme);
     const frame = window.requestAnimationFrame(() => setTheme(initialTheme));
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = nextTheme;
-    window.localStorage.setItem("theme", nextTheme);
     setTheme(nextTheme);
+    document.documentElement.dataset.theme = nextTheme;
+    try {
+      window.localStorage.setItem("theme", nextTheme);
+    } catch {
+      // Keep the active theme even when persistence is unavailable.
+    }
   };
 
   const isDark = theme === "dark";

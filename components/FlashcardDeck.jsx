@@ -73,11 +73,11 @@ export default function FlashcardDeck({ deck, onReset }) {
   const progressPercent = totalCards > 0 ? Math.round(((currentIndex + 1) / totalCards) * 100) : 0;
 
   return (
-    <div className="w-full max-w-2xl space-y-6">
-      <div className="flex flex-col items-start justify-between gap-4 rounded-[var(--radius-lg)] border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center">
-        <div>
+    <div className="flex flex-col h-full min-h-0 w-full max-w-2xl space-y-2 sm:space-y-3 lg:grid lg:h-full lg:min-h-0 lg:max-w-5xl lg:grid-cols-[minmax(14rem,17rem)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)_auto] lg:gap-6 lg:space-y-0">
+      <div className="flex shrink-0 items-center justify-between gap-2 rounded-[var(--radius-lg)] border border-[var(--border-card)] bg-[var(--bg-card)] px-3 py-2 sm:px-4 sm:py-3 lg:col-span-2 lg:row-start-1 lg:h-fit">
+        <div className="min-w-0">
           <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--primary)]"><Layers size={14} aria-hidden="true" /> Flashcard deck</span>
-          <h2 className="mt-1 font-[var(--font-display)] text-xl leading-[var(--leading-tight)] text-[var(--fg)]">{deck.topic}</h2>
+          <h2 className="mt-0.5 break-words font-[var(--font-display)] text-base sm:text-lg lg:text-xl font-medium leading-[var(--leading-tight)] text-[var(--fg)]">{deck.topic}</h2>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           {trickyCardIds.size > 0 && (
@@ -102,7 +102,7 @@ export default function FlashcardDeck({ deck, onReset }) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 lg:col-start-1 lg:row-start-2 lg:self-start">
         <div className="flex items-center justify-between px-1 font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
           <span>Card {currentIndex + 1} of {totalCards}</span>
           <span>{progressPercent}%</span>
@@ -114,7 +114,7 @@ export default function FlashcardDeck({ deck, onReset }) {
 
       {currentCard && <Flashcard card={currentCard} isFlipped={isFlipped} onFlip={handleToggleFlip} isTricky={trickyCardIds.has(currentCard.id)} onToggleTricky={handleToggleTricky} />}
 
-      <div className="flex items-center justify-between gap-3 pt-2">
+      <div className="flex items-center justify-between gap-3 pt-2 lg:col-start-2 lg:row-start-3 lg:mx-auto lg:w-full lg:max-w-xl lg:pt-0">
         <button type="button" onClick={handlePrev} disabled={currentIndex === 0} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--border-card)] bg-[var(--bg-card)] px-4 text-sm font-semibold text-[var(--fg)] shadow-[var(--shadow-sm)] transition-colors duration-150 hover:bg-[var(--bg-muted)] disabled:cursor-not-allowed disabled:opacity-40">
           <ChevronLeft size={18} aria-hidden="true" /><span>Previous</span>
         </button>
@@ -126,7 +126,7 @@ export default function FlashcardDeck({ deck, onReset }) {
         </button>
       </div>
 
-      <div className="hidden items-center justify-center gap-5 pt-1 text-[11px] font-medium text-[var(--fg-muted)] sm:flex">
+      <div className="hidden items-center justify-center gap-5 pt-1 text-[11px] font-medium text-[var(--fg-muted)] sm:flex lg:col-start-1 lg:row-start-3 lg:flex-col lg:items-start lg:justify-end lg:gap-2 lg:pt-0">
         <span className="flex items-center gap-1"><kbd className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-muted)] px-1.5 py-0.5">Space</kbd> Flip</span>
         <span className="flex items-center gap-1"><kbd className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-muted)] px-1.5 py-0.5">←</kbd> Previous</span>
         <span className="flex items-center gap-1"><kbd className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-muted)] px-1.5 py-0.5">→</kbd> Next</span>
