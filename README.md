@@ -2,7 +2,7 @@
 
 Study Assistant is an interactive web application that transforms raw lecture notes or any topic prompt into structured, stateful **Flashcard Decks** and self-retrieval **Quiz Decks** with instant feedback and retest queues.
 
-Built with **Next.js (App Router)**, **TypeScript** data contracts, and **Tailwind CSS**, with a resilient multi-provider AI backend supporting Google Gemini, OpenRouter, and xAI Grok.
+Built with **Next.js (App Router)**, **TypeScript** data contracts, and **Tailwind CSS**, with a resilient multi-provider AI backend supporting OpenRouter (Gemini Flash) as the main provider and direct Google Gemini API as fallback.
 
 ---
 
@@ -18,11 +18,10 @@ npm install
 ### 2. Configure Environment Variables
 Create a `.env.local` file in the project root:
 ```env
-GEMINI_API_KEY=your_gemini_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
-XAI_API_KEY=your_xai_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
-> **Note:** At least one valid API key is required. The server route uses a 3-tier automatic fallback chain: `Gemini Direct` ➔ `OpenRouter (Gemini 2.5 Flash)` ➔ `Grok`.
+> **Note:** At least one valid API key is required. The server route uses a 2-tier automatic fallback chain: `OpenRouter (Gemini Flash)` (Main) ➔ `Gemini Direct` (Fallback).
 
 ### 3. Run Development Server
 ```bash
@@ -46,7 +45,7 @@ This project was built using an **AI-Assisted Spec & Execution Methodology**:
 
 - **System Prompting & Data Safety:** All LLM calls pass through `app/api/generate/route.ts` (server-side only). No API keys ship to client code.
 - **Strict Data Contract (`lib/schema.ts`):** The application never trusts raw LLM outputs. Model outputs are validated against the `Deck` data contract, code fences (\`\`\`json) are stripped, and errors are categorized into tagged `kind` states (`parse`, `shape`, `empty`, `rate_limit`, `network`).
-- **Resilient Fallback Architecture:** Designed with multi-provider fallback so client requests seamlessly failover if a primary provider hits rate limits or quota boundaries.
+- **Resilient Fallback Architecture:** Designed with multi-provider fallback (OpenRouter with Gemini Flash as main ➔ Gemini Direct API as fallback) so client requests seamlessly failover if a primary provider hits rate limits or quota boundaries.
 - **Planning & Execution:** All work was executed in numbered milestone plans (`plans/001` through `plans/007`) following strict git workflow conventions.
 
 ---
