@@ -1,129 +1,113 @@
-// components/InputScreen.jsx — Input screen with textarea, mode toggle, generate button
 "use client";
 
 import React, { useState } from "react";
+import { Layers, ListChecks, LoaderCircle, TriangleAlert } from "lucide-react";
 
 export default function InputScreen({ onGenerate, isLoading, initialTopic = "", initialMode = "flashcards" }) {
   const [topic, setTopic] = useState(initialTopic);
   const [mode, setMode] = useState(initialMode);
   const [validationError, setValidationError] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const trimmed = topic.trim();
     if (!trimmed) {
-      setValidationError("Please enter a topic or paste your study notes.");
+      setValidationError("Enter a topic or paste your study notes to continue.");
       return;
     }
     setValidationError("");
     onGenerate(trimmed, mode);
   };
 
+  const isFlashcards = mode === "flashcards";
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 md:p-8 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-800 shadow-2xl transition-all duration-300">
-      <div className="mb-6 text-center">
-        <span className="inline-block px-3 py-1 text-xs font-semibold tracking-wider text-indigo-400 uppercase bg-indigo-500/10 rounded-full border border-indigo-500/20 mb-3">
-          AI Study Assistant
-        </span>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
-          Turn your notes into study decks
+    <div className="w-full max-w-2xl rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-6 shadow-[var(--shadow-lg)] sm:p-8">
+      <div className="mb-7 text-center">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--primary)]">Study workspace</p>
+        <h1 className="font-[var(--font-display)] text-3xl leading-[var(--leading-tight)] tracking-[var(--tracking-tight)] text-[var(--fg)] sm:text-4xl">
+          Turn your notes into a study deck
         </h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Paste study material or type any topic to generate instant interactive flashcards or quiz decks.
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-[var(--leading-relaxed)] text-[var(--fg-muted)] sm:text-base">
+          Paste your material or name a topic, then choose how you want to practice it.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Mode Toggle */}
-        <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-            Choose Deck Type
-          </label>
-          <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-950/60 rounded-xl border border-slate-800/80">
+        <fieldset>
+          <legend className="mb-2 block text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--fg-muted)]">Study format</legend>
+          <div className="grid grid-cols-2 gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-muted)] p-1.5">
             <button
               type="button"
               onClick={() => setMode("flashcards")}
               disabled={isLoading}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                mode === "flashcards"
-                  ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/25 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              aria-pressed={isFlashcards}
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] px-3 text-sm font-semibold transition-colors duration-150 ${
+                isFlashcards
+                  ? "bg-[var(--bg-card)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
+                  : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
               }`}
             >
-              <span>🎴</span>
-              <span>Flashcards</span>
+              <Layers size={17} aria-hidden="true" />
+              Flashcards
             </button>
-
             <button
               type="button"
               onClick={() => setMode("quiz")}
               disabled={isLoading}
-              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                mode === "quiz"
-                  ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-lg shadow-indigo-500/25 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              aria-pressed={!isFlashcards}
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] px-3 text-sm font-semibold transition-colors duration-150 ${
+                !isFlashcards
+                  ? "bg-[var(--bg-card)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
+                  : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
               }`}
             >
-              <span>❓</span>
-              <span>Quiz Mode</span>
+              <ListChecks size={17} aria-hidden="true" />
+              Quiz
             </button>
           </div>
-        </div>
+        </fieldset>
 
-        {/* Input Textarea */}
         <div>
-          <div className="flex justify-between items-center mb-2">
-            <label htmlFor="topic-input" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Topic or Study Notes
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <label htmlFor="topic-input" className="text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--fg-muted)]">
+              Topic or study notes
             </label>
-            <span className="text-xs text-slate-500">
-              {topic.length > 0 ? `${topic.length} chars` : "Paste raw text or type topic"}
+            <span className="font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
+              {topic.length > 0 ? `${topic.length} characters` : "Paste notes or type a topic"}
             </span>
           </div>
-
-          <div className="relative">
-            <textarea
-              id="topic-input"
-              value={topic}
-              onChange={(e) => {
-                setTopic(e.target.value);
-                if (validationError) setValidationError("");
-              }}
-              disabled={isLoading}
-              rows={5}
-              placeholder="e.g. Photosynthesis light-dependent reactions, or paste your lecture notes here..."
-              className={`w-full p-4 bg-slate-950/80 text-white placeholder-slate-500 rounded-xl border ${
-                validationError ? "border-rose-500/80 focus:ring-rose-500" : "border-slate-800 focus:border-indigo-500 focus:ring-indigo-500"
-              } focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-all duration-200 resize-y min-h-[130px]`}
-            />
-          </div>
-
+          <textarea
+            id="topic-input"
+            value={topic}
+            onChange={(event) => {
+              setTopic(event.target.value);
+              if (validationError) setValidationError("");
+            }}
+            disabled={isLoading}
+            rows={6}
+            placeholder="For example: Photosynthesis light-dependent reactions, or paste your lecture notes here..."
+            className={`min-h-36 w-full resize-y rounded-[var(--radius-lg)] border bg-[var(--bg-input)] p-4 text-base leading-[var(--leading-body)] text-[var(--fg)] placeholder:text-[var(--fg-muted)] transition-colors duration-150 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/25 ${
+              validationError ? "border-[var(--error)]" : "border-[var(--border)]"
+            }`}
+          />
           {validationError && (
-            <p className="mt-2 text-xs font-medium text-rose-400 flex items-center gap-1.5">
-              <span>⚠️</span> {validationError}
+            <p className="animate-fade-in mt-2 flex items-center gap-1.5 text-sm font-medium text-[var(--error)]" role="alert">
+              <TriangleAlert size={15} aria-hidden="true" />
+              {validationError}
             </p>
           )}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={isLoading || !topic.trim()}
-          className="w-full py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-size-200 hover:bg-right transition-all duration-300 shadow-xl shadow-indigo-600/25 hover:shadow-indigo-600/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-colors duration-150 hover:bg-[var(--primary-hover)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              <span>Generating Deck...</span>
-            </>
+            <><LoaderCircle size={19} className="animate-spin" aria-hidden="true" /> Building your deck...</>
           ) : (
-            <>
-              <span>✨</span>
-              <span>Generate {mode === "flashcards" ? "Flashcards" : "Quiz Deck"}</span>
-            </>
+            <>{isFlashcards ? <Layers size={19} aria-hidden="true" /> : <ListChecks size={19} aria-hidden="true" />} Create {isFlashcards ? "Flashcards" : "Quiz"}</>
           )}
         </button>
       </form>

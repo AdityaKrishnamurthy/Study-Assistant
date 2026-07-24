@@ -1,103 +1,86 @@
-// components/Flashcard.jsx — Interactive 3D Flip Card Component
 "use client";
 
 import React from "react";
+import { Bookmark, BookmarkCheck, FlipHorizontal2, Info } from "lucide-react";
 
-export default function Flashcard({
-  card,
-  isFlipped,
-  onFlip,
-  isTricky,
-  onToggleTricky,
-}) {
+export default function Flashcard({ card, isFlipped, onFlip, isTricky, onToggleTricky }) {
   if (!card) return null;
 
+  const trickyButton = (onBack = false) => (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggleTricky(card.id);
+      }}
+      aria-label={isTricky ? "Remove tricky mark" : "Mark card as tricky"}
+      title={isTricky ? "Marked as tricky" : "Mark card as tricky"}
+      className={`flex min-h-10 items-center gap-1.5 rounded-[var(--radius-md)] border px-2.5 text-xs font-semibold transition-colors duration-150 ${
+        isTricky
+          ? "border-[var(--warning)]/30 bg-[var(--warning-bg)] text-[var(--warning)]"
+          : `border-[var(--border)] bg-[var(--bg-muted)] text-[var(--fg-muted)] hover:text-[var(--warning)] ${onBack ? "" : ""}`
+      }`}
+    >
+      {isTricky ? <BookmarkCheck size={15} aria-hidden="true" /> : <Bookmark size={15} aria-hidden="true" />}
+      <span className="hidden sm:inline">{isTricky ? "Tricky" : "Mark tricky"}</span>
+    </button>
+  );
+
   return (
-    <div className="w-full max-w-xl mx-auto perspective-1000">
+    <div className="perspective-1000 mx-auto w-full max-w-xl">
       <div
         onClick={onFlip}
         tabIndex={0}
         role="button"
         aria-label={`Flashcard: ${isFlipped ? "Answer" : "Question"}. Click to flip.`}
-        onKeyDown={(e) => {
-          if (e.key === " " || e.key === "Enter") {
-            e.preventDefault();
+        onKeyDown={(event) => {
+          if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
             onFlip();
           }
         }}
-        className={`relative w-full h-[320px] sm:h-[360px] rounded-2xl cursor-pointer select-none transition-transform duration-500 transform-style-3d shadow-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-950 ${
+        style={{ transitionDuration: "var(--dur-slow)", transitionTimingFunction: "var(--ease-spring)" }}
+        className={`transform-style-3d relative h-80 w-full cursor-pointer select-none rounded-[var(--radius-xl)] transition-transform sm:h-96 ${
           isFlipped ? "rotate-y-180" : ""
         }`}
       >
-        {/* FRONT SIDE */}
-        <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-indigo-500/30 flex flex-col justify-between backface-hidden shadow-indigo-500/10">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 rounded-full border border-indigo-500/20">
-              <span>❓</span> Question
+        <div className="backface-hidden absolute inset-0 flex h-full w-full flex-col justify-between rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-6 shadow-[var(--shadow-card)] sm:p-8">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border border-[var(--border)] bg-[var(--bg-muted)] px-3 py-1 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--primary)]">
+              <Info size={13} aria-hidden="true" /> Question
             </span>
-
-            {/* Tricky Star Toggle Button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleTricky(card.id);
-              }}
-              title={isTricky ? "Marked as tricky" : "Mark card as tricky"}
-              className={`p-2 rounded-lg text-sm transition-all ${
-                isTricky
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                  : "bg-slate-800/60 text-slate-400 hover:text-amber-300 hover:bg-slate-800"
-              }`}
-            >
-              {isTricky ? "⭐ Tricky" : "☆ Mark Tricky"}
-            </button>
+            {trickyButton()}
           </div>
 
-          <div className="my-auto py-2 text-center overflow-y-auto max-h-[180px] sm:max-h-[220px] break-words custom-scrollbar">
-            <h3 className="text-xl sm:text-2xl font-bold text-white leading-relaxed tracking-tight">
+          <div className="custom-scrollbar my-auto max-h-52 overflow-y-auto py-4 text-center sm:max-h-60">
+            <h3 className="font-[var(--font-display)] text-2xl leading-[var(--leading-tight)] tracking-[var(--tracking-tight)] text-[var(--fg)] sm:text-3xl">
               {card.front}
             </h3>
           </div>
 
-          <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400 animate-pulse pt-2 shrink-0">
-            <span>🔄</span>
-            <span>Click or press Space to flip</span>
+          <div className="flex items-center justify-center gap-1.5 pt-2 text-xs font-medium text-[var(--fg-muted)]">
+            <FlipHorizontal2 size={14} aria-hidden="true" />
+            Click or press Space to flip
           </div>
         </div>
 
-        {/* BACK SIDE */}
-        <div className="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-purple-500/30 flex flex-col justify-between backface-hidden rotate-y-180 shadow-purple-500/10">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/20">
-              <span>💡</span> Answer
+        <div className="backface-hidden rotate-y-180 absolute inset-0 flex h-full w-full flex-col justify-between rounded-[var(--radius-xl)] border border-[var(--accent)]/25 bg-[var(--bg-card)] p-6 shadow-[var(--shadow-card)] sm:p-8">
+          <div className="flex items-center justify-between gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border border-[var(--accent)]/25 bg-[var(--bg-muted)] px-3 py-1 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--accent)]">
+              <Info size={13} aria-hidden="true" /> Answer
             </span>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleTricky(card.id);
-              }}
-              className={`p-2 rounded-lg text-sm transition-all ${
-                isTricky
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                  : "bg-slate-800/60 text-slate-400 hover:text-amber-300 hover:bg-slate-800"
-              }`}
-            >
-              {isTricky ? "⭐ Tricky" : "☆ Mark Tricky"}
-            </button>
+            {trickyButton(true)}
           </div>
 
-          <div className="my-auto py-2 text-center overflow-y-auto max-h-[180px] sm:max-h-[220px] break-words custom-scrollbar">
-            <p className="text-lg sm:text-xl font-medium text-slate-100 leading-relaxed">
+          <div className="custom-scrollbar my-auto max-h-52 overflow-y-auto py-4 text-center sm:max-h-60">
+            <p className="font-[var(--font-display)] text-lg leading-[var(--leading-relaxed)] text-[var(--fg)] sm:text-xl">
               {card.back}
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-1.5 text-xs font-medium text-purple-400">
-            <span>🔄</span>
-            <span>Click or press Space to see question</span>
+          <div className="flex items-center justify-center gap-1.5 pt-2 text-xs font-medium text-[var(--fg-muted)]">
+            <FlipHorizontal2 size={14} aria-hidden="true" />
+            Click or press Space to see the question
           </div>
         </div>
       </div>
