@@ -1,85 +1,67 @@
-// components/QuizDeck.jsx — Quiz deck manager with scoring & interactive retest loop queue
 "use client";
 
 import React, { useState } from "react";
+import { CircleCheck, ListChecks, RefreshCw } from "lucide-react";
 import QuizQuestion from "./QuizQuestion";
 
 export default function QuizDeck({ deck, onReset }) {
   const originalQuestions = deck?.questions || [];
-
-  // Core state machine
-  const [phase, setPhase] = useState("first-pass"); // "first-pass" | "summary" | "retest" | "done"
+  const [phase, setPhase] = useState("first-pass");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [hasAnswered, setHasAnswered] = useState(false);
-
-  // Scoring & Retest Queue Tracking
   const [firstPassScore, setFirstPassScore] = useState(0);
   const [wrongQuestionIds, setWrongQuestionIds] = useState(new Set());
   const [retestQuestions, setRetestQuestions] = useState([]);
 
-  // Active question set based on phase
   const activeQuestions = phase === "retest" ? retestQuestions : originalQuestions;
   const currentQuestion = activeQuestions[currentIndex] || null;
   const totalQuestions = activeQuestions.length;
 
   const handleAnswer = (choiceIndex) => {
     if (hasAnswered || !currentQuestion) return;
-
     setSelectedChoice(choiceIndex);
     setHasAnswered(true);
-
     const isCorrect = choiceIndex === currentQuestion.correctIndex;
 
     if (phase === "first-pass") {
-      if (isCorrect) {
-        setFirstPassScore((prev) => prev + 1);
-      } else {
-        setWrongQuestionIds((prev) => new Set(prev).add(currentQuestion.id));
-      }
-    } else if (phase === "retest") {
-      if (isCorrect) {
-        // Correct in retest: remove from wrong set
-        setWrongQuestionIds((prev) => {
-          const next = new Set(prev);
-          next.delete(currentQuestion.id);
-          return next;
-        });
-      }
-      // If wrong again in retest, it stays in wrongQuestionIds
+      if (isCorrect) setFirstPassScore((previous) => previous + 1);
+      else setWrongQuestionIds((previous) => new Set(previous).add(currentQuestion.id));
+    } else if (phase === "retest" && isCorrect) {
+      setWrongQuestionIds((previous) => {
+        const next = new Set(previous);
+        next.delete(currentQuestion.id);
+        return next;
+      });
     }
   };
 
   const handleNextQuestion = () => {
     if (currentIndex < totalQuestions - 1) {
-      setCurrentIndex((prev) => prev + 1);
+      setCurrentIndex((previous) => previous + 1);
       setSelectedChoice(null);
       setHasAnswered(false);
-    } else {
-      // Reached end of current set
-      if (phase === "first-pass") {
-        setPhase("summary");
-      } else if (phase === "retest") {
-        // Check if there are still wrong questions remaining
-        const remainingWrong = originalQuestions.filter((q) => wrongQuestionIds.has(q.id));
-        if (remainingWrong.length > 0) {
-          // Restart retest for remaining wrong questions
-          setRetestQuestions(remainingWrong);
-          setCurrentIndex(0);
-          setSelectedChoice(null);
-          setHasAnswered(false);
-        } else {
-          // Retest completely cleared!
-          setPhase("done");
-        }
+      return;
+    }
+
+    if (phase === "first-pass") {
+      setPhase("summary");
+    } else if (phase === "retest") {
+      const remainingWrong = originalQuestions.filter((question) => wrongQuestionIds.has(question.id));
+      if (remainingWrong.length > 0) {
+        setRetestQuestions(remainingWrong);
+        setCurrentIndex(0);
+        setSelectedChoice(null);
+        setHasAnswered(false);
+      } else {
+        setPhase("done");
       }
     }
   };
 
   const handleStartRetest = () => {
-    const wrongList = originalQuestions.filter((q) => wrongQuestionIds.has(q.id));
+    const wrongList = originalQuestions.filter((question) => wrongQuestionIds.has(question.id));
     if (wrongList.length === 0) return;
-
     setRetestQuestions(wrongList);
     setCurrentIndex(0);
     setSelectedChoice(null);
@@ -88,139 +70,69 @@ export default function QuizDeck({ deck, onReset }) {
   };
 
   const progressPercent = totalQuestions > 0 ? Math.round(((currentIndex + 1) / totalQuestions) * 100) : 0;
+  const isRetest = phase === "retest";
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
-      {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800 backdrop-blur-md">
+    <div className="w-full max-w-2xl space-y-6">
+      <div className="flex flex-col items-start justify-between gap-4 rounded-[var(--radius-lg)] border border-[var(--border-card)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-purple-400">
-            {phase === "retest" ? "🔁 Retest Phase" : "❓ Quiz Deck"}
+          <span className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] ${isRetest ? "text-[var(--warning)]" : "text-[var(--primary)]"}`}>
+            {isRetest ? <RefreshCw size={14} aria-hidden="true" /> : <ListChecks size={14} aria-hidden="true" />}
+            {isRetest ? "Retest phase" : "Quiz deck"}
           </span>
-          <h2 className="text-xl font-bold text-white tracking-tight leading-snug">{deck.topic}</h2>
+          <h2 className="mt-1 font-[var(--font-display)] text-xl leading-[var(--leading-tight)] text-[var(--fg)]">{deck.topic}</h2>
         </div>
-
-        <div className="flex items-center gap-3">
-          {phase === "first-pass" && (
-            <span className="text-xs font-semibold px-3 py-1.5 bg-slate-950/80 rounded-lg border border-slate-800 text-slate-300">
-              Score: <span className="text-indigo-400">{firstPassScore}</span> / {currentIndex + (hasAnswered ? 1 : 0)}
-            </span>
-          )}
-
-          <button
-            onClick={onReset}
-            className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800 rounded-lg border border-slate-700 transition-colors"
-          >
-            Edit Notes
-          </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          {phase === "first-pass" && <span className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-muted)] px-3 py-2 font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">Score <span className="font-semibold text-[var(--primary)]">{firstPassScore}</span> / {currentIndex + (hasAnswered ? 1 : 0)}</span>}
+          <button type="button" onClick={onReset} className="min-h-11 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-card)] px-3 text-xs font-semibold text-[var(--fg-muted)] transition-colors duration-150 hover:text-[var(--primary)]">Edit notes</button>
         </div>
       </div>
 
-      {/* FIRST-PASS / RETEST QUESTION VIEW */}
       {(phase === "first-pass" || phase === "retest") && (
         <div className="space-y-6">
-          {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between items-center text-xs font-semibold text-slate-400 px-1">
-              <span>
-                {phase === "retest" ? `Retest Item ${currentIndex + 1} of ${totalQuestions}` : `Question ${currentIndex + 1} of ${totalQuestions}`}
-              </span>
+            <div className="flex items-center justify-between px-1 font-[var(--font-mono)] text-xs text-[var(--fg-muted)]">
+              <span>{isRetest ? `Retest item ${currentIndex + 1} of ${totalQuestions}` : `Question ${currentIndex + 1} of ${totalQuestions}`}</span>
               <span>{progressPercent}%</span>
             </div>
-            <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-              <div
-                className={`h-full transition-all duration-300 rounded-full ${
-                  phase === "retest"
-                    ? "bg-gradient-to-r from-amber-500 to-orange-500"
-                    : "bg-gradient-to-r from-indigo-500 to-purple-500"
-                }`}
-                style={{ width: `${progressPercent}%` }}
-              />
+            <div className="h-2 w-full overflow-hidden rounded-[var(--radius-full)] bg-[var(--bg-muted)]">
+              <div className={`h-full rounded-[var(--radius-full)] transition-all duration-300 ${isRetest ? "bg-[var(--warning)]" : "bg-[var(--primary)]"}`} style={{ width: `${progressPercent}%` }} />
             </div>
           </div>
-
-          {currentQuestion && (
-            <QuizQuestion
-              question={currentQuestion}
-              onAnswer={handleAnswer}
-              selectedChoice={selectedChoice}
-              hasAnswered={hasAnswered}
-              onNext={handleNextQuestion}
-              isLastQuestion={currentIndex === totalQuestions - 1}
-              isRetest={phase === "retest"}
-            />
-          )}
+          {currentQuestion && <QuizQuestion question={currentQuestion} onAnswer={handleAnswer} selectedChoice={selectedChoice} hasAnswered={hasAnswered} onNext={handleNextQuestion} isLastQuestion={currentIndex === totalQuestions - 1} isRetest={isRetest} />}
         </div>
       )}
 
-      {/* SUMMARY SCREEN (End of first pass per DESIGN.md) */}
       {phase === "summary" && (
-        <div className="p-8 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 shadow-2xl text-center space-y-6 animate-fade-in">
-          <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-4xl shadow-xl shadow-indigo-600/30">
-            📊
-          </div>
-
+        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--border-card)] bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)]">
+          <div className="mx-auto grid size-20 place-items-center rounded-[var(--radius-full)] bg-[var(--bg-muted)] text-[var(--primary)]"><ListChecks size={40} aria-hidden="true" /></div>
           <div className="space-y-2">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">Quiz Complete!</h3>
-            <p className="text-sm text-slate-400">Here is your official first-pass score:</p>
+            <h3 className="font-[var(--font-display)] text-2xl text-[var(--fg)]">Quiz complete</h3>
+            <p className="text-sm text-[var(--fg-muted)]">Your first-pass result:</p>
           </div>
-
-          {/* Score Badge */}
-          <div className="p-6 bg-slate-950/80 rounded-xl border border-slate-800/80 inline-block w-full max-w-sm">
-            <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-              {firstPassScore} / {originalQuestions.length}
-            </div>
-            <div className="text-sm font-semibold text-slate-300 mt-2">
-              ({Math.round((firstPassScore / originalQuestions.length) * 100)}% Accuracy)
-            </div>
+          <div className="mx-auto w-full max-w-sm rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-input)] p-6">
+            <div className="font-[var(--font-mono)] text-3xl font-bold text-[var(--fg)]">{firstPassScore} / {originalQuestions.length}</div>
+            <div className="mt-2 text-sm font-semibold text-[var(--fg-muted)]">{Math.round((firstPassScore / originalQuestions.length) * 100)}% accuracy</div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+          <div className="flex flex-col justify-center gap-3 pt-1 sm:flex-row">
             {wrongQuestionIds.size > 0 ? (
-              <button
-                onClick={handleStartRetest}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2"
-              >
-                <span>🔁</span>
-                <span>Retest {wrongQuestionIds.size} Missed Question{wrongQuestionIds.size > 1 ? "s" : ""}</span>
-              </button>
+              <button type="button" onClick={handleStartRetest} className="flex min-h-12 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--warning)]/40 bg-[var(--warning-bg)] px-5 text-sm font-semibold text-[var(--warning)] transition-colors duration-150 hover:border-[var(--warning)]"><RefreshCw size={16} aria-hidden="true" /> Retest {wrongQuestionIds.size} missed question{wrongQuestionIds.size > 1 ? "s" : ""}</button>
             ) : (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm font-semibold">
-                🎉 Perfect Score! You mastered all questions on your first try!
-              </div>
+              <div className="flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-[var(--success)]/30 bg-[var(--success-bg)] px-4 py-3 text-sm font-semibold text-[var(--success)]"><CircleCheck size={17} aria-hidden="true" /> Perfect first pass</div>
             )}
-
-            <button
-              onClick={onReset}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors border border-slate-700"
-            >
-              Create New Deck
-            </button>
+            <button type="button" onClick={onReset} className="min-h-12 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-muted)] px-5 text-sm font-semibold text-[var(--fg)] transition-colors duration-150 hover:border-[var(--primary)]">Create new deck</button>
           </div>
         </div>
       )}
 
-      {/* RETEST DONE SCREEN */}
       {phase === "done" && (
-        <div className="p-8 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-emerald-500/30 shadow-2xl text-center space-y-6 animate-fade-in">
-          <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-4xl shadow-xl shadow-emerald-500/20">
-            🎓
-          </div>
-
+        <div className="animate-fade-in space-y-6 rounded-[var(--radius-xl)] border border-[var(--success)]/30 bg-[var(--bg-card)] p-8 text-center shadow-[var(--shadow-lg)]">
+          <div className="mx-auto grid size-20 place-items-center rounded-[var(--radius-full)] border border-[var(--success)]/25 bg-[var(--success-bg)] text-[var(--success)]"><CircleCheck size={40} aria-hidden="true" /></div>
           <div className="space-y-2">
-            <h3 className="text-2xl font-extrabold text-white tracking-tight">Retest Mastery Achieved!</h3>
-            <p className="text-sm text-slate-300 leading-relaxed max-w-md mx-auto">
-              You have successfully retested and answered all previously missed questions correctly.
-            </p>
+            <h3 className="font-[var(--font-display)] text-2xl text-[var(--fg)]">Retest complete</h3>
+            <p className="mx-auto max-w-md text-sm leading-[var(--leading-relaxed)] text-[var(--fg-muted)]">You answered every previously missed question correctly.</p>
           </div>
-
-          <button
-            onClick={onReset}
-            className="px-6 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-600/25"
-          >
-            Create Another Study Deck
-          </button>
+          <button type="button" onClick={onReset} className="min-h-12 rounded-[var(--radius-md)] bg-[var(--primary)] px-6 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-colors duration-150 hover:bg-[var(--primary-hover)]">Create another study deck</button>
         </div>
       )}
     </div>

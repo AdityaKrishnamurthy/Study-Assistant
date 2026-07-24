@@ -46,13 +46,13 @@ This project was built using an **AI-Assisted Spec & Execution Methodology**:
 - **System Prompting & Data Safety:** All LLM calls pass through `app/api/generate/route.ts` (server-side only). No API keys ship to client code.
 - **Strict Data Contract (`lib/schema.ts`):** The application never trusts raw LLM outputs. Model outputs are validated against the `Deck` data contract, code fences (\`\`\`json) are stripped, and errors are categorized into tagged `kind` states (`parse`, `shape`, `empty`, `rate_limit`, `network`).
 - **Resilient Fallback Architecture:** Designed with multi-provider fallback (OpenRouter with Gemini Flash as main ➔ Gemini Direct API as fallback) so client requests seamlessly failover if a primary provider hits rate limits or quota boundaries.
-- **Planning & Execution:** All work was executed in numbered milestone plans (`plans/001` through `plans/007`) following strict git workflow conventions.
+- **Planning & Execution:** All work was executed in numbered milestone plans (`plans/001` through `plans/008`) following strict git workflow conventions.
 
 ---
 
 ## ⏱️ Time Spent
 
-Total development time: **~2.3 hours** (140 minutes)
+Total development time: **~2.9 hours** (175 minutes)
 
 | Plan | Task | Actual Time |
 |---|---|---|
@@ -63,6 +63,7 @@ Total development time: **~2.3 hours** (140 minutes)
 | **005** | Interactive Quiz UI & Retest loop queue | ~20 min |
 | **006** | Mobile responsiveness polish & scroll bounds | ~15 min |
 | **007** | README & submission audit | ~15 min |
+| **008** | Graph Paper UI revamp, themes, and responsive polish | ~35 min |
 
 ---
 

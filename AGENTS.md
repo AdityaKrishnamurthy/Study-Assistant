@@ -6,7 +6,8 @@ in order, unless told otherwise.
 
 ## Before touching code
 1. Read `DESIGN.md` in full.
-2. Read the plan file you're about to execute in full.
+2. Read `plans/README.md` and `plans/PLANS.md` in full, then read the plan
+   file you're about to execute in full.
 3. Run the plan's drift-check command. If the repo doesn't match what the
    plan assumed, stop and report the mismatch — don't improvise a fix.
 
@@ -31,14 +32,15 @@ in order, unless told otherwise.
 - `lib/prompt.ts` — prompt construction.
 - `components/` — presentational + stateful UI, no direct API calls except
   through `lib/client.ts`.
-- `plans/` — execution plans, read-only history once complete. When a plan
-  is finished, update its Status block (see plan template) rather than
-  deleting it.
 
 ## When you're done with a plan
 Update the plan's Status line (`Status: done`) and note the actual time
-spent vs. estimated, in the plan file itself. This is how the README's
-"time spent" section gets written honestly at the end instead of guessed.
+spent vs. estimated, in the plan file itself. Update the corresponding row in
+`plans/PLANS.md` in the same completed plan's final commit, including the
+status and progress summary. Update the corresponding row in the `README.md`
+**Time Spent** table in that same final commit, including its task summary and
+actual time; update the total there as well. This keeps the time audit honest
+rather than guessed.
 
 ## Stop conditions
 Stop and ask the user (don't just pick something) if:

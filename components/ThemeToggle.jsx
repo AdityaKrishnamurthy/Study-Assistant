@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState(null);
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     const storedTheme = window.localStorage.getItem("theme");
@@ -16,7 +16,8 @@ export default function ThemeToggle() {
 
     document.documentElement.dataset.theme = initialTheme;
     window.localStorage.setItem("theme", initialTheme);
-    setTheme(initialTheme);
+    const frame = window.requestAnimationFrame(() => setTheme(initialTheme));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const toggleTheme = () => {

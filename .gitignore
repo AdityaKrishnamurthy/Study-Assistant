@@ -42,6 +42,10 @@ next-env.d.ts
 
 # local planning, agents & design docs
 .agents/
+.agents/skills-lock.json
+.agents/skills/ui-ux-pro-max/
+.agents/skills/react-grab/
+.agents/skills/frontend-design/
 skills-lock.json
 plans/
 DESIGN.md
