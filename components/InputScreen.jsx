@@ -1,9 +1,31 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layers, ListChecks, LoaderCircle, TriangleAlert } from "lucide-react";
+import { History, Layers, ListChecks, LoaderCircle, Trash2, TriangleAlert } from "lucide-react";
 
-export default function InputScreen({ onGenerate, isLoading, initialTopic = "", initialMode = "flashcards" }) {
+/**
+ * @typedef {import('@/lib/sessions').SavedSession} SavedSession
+ * @param {{
+ *   onGenerate: (topic: string, mode: import('@/lib/prompt').DeckMode) => void;
+ *   isLoading: boolean;
+ *   initialTopic?: string;
+ *   initialMode?: import('@/lib/prompt').DeckMode;
+ *   savedSessions?: SavedSession[];
+ *   onLoadSession?: (session: SavedSession) => void;
+ *   onDeleteSession?: (id: string) => void;
+ *   onClearSessions?: () => void;
+ * }} props
+ */
+export default function InputScreen({
+  onGenerate,
+  isLoading,
+  initialTopic = "",
+  initialMode = "flashcards",
+  savedSessions = /** @type {SavedSession[]} */ ([]),
+  onLoadSession,
+  onDeleteSession,
+  onClearSessions,
+}) {
   const [topic, setTopic] = useState(initialTopic);
   const [mode, setMode] = useState(initialMode);
   const [validationError, setValidationError] = useState("");
@@ -111,6 +133,77 @@ export default function InputScreen({ onGenerate, isLoading, initialTopic = "", 
           )}
         </button>
       </form>
+
+      {Array.isArray(savedSessions) && savedSessions.length > 0 && (
+        <div className="mt-8 border-t border-[var(--border)] pt-6">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--fg-muted)]">
+              <History size={14} aria-hidden="true" /> Recent Decks ({savedSessions.length})
+            </span>
+            {onClearSessions && (
+              <button
+                type="button"
+                onClick={onClearSessions}
+                className="text-xs font-medium text-[var(--fg-muted)] hover:text-[var(--error)] transition-colors"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+
+          <div className="custom-scrollbar max-h-48 space-y-2 overflow-y-auto pr-1">
+            {savedSessions.map((session) => {
+              const isFlashcardMode = session.mode === "flashcards";
+              const itemCount = isFlashcardMode
+                ? session.deck?.cards?.length || 0
+                : session.deck?.questions?.length || 0;
+              const dateStr = session.savedAt
+                ? new Date(session.savedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+                : "";
+
+              return (
+                <div
+                  key={session.id}
+                  className="group flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-muted)]/60 p-2.5 transition-colors hover:border-[var(--primary)] hover:bg-[var(--bg-card)]"
+                >
+                  <button
+                    type="button"
+                    onClick={() => onLoadSession && onLoadSession(session)}
+                    className="flex flex-1 items-center gap-2.5 min-w-0 text-left"
+                  >
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-card)] text-[var(--primary)]">
+                      {isFlashcardMode ? <Layers size={14} aria-hidden="true" /> : <ListChecks size={14} aria-hidden="true" />}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-[var(--fg)] group-hover:text-[var(--primary)] transition-colors">
+                        {session.topic}
+                      </p>
+                      <p className="text-[11px] text-[var(--fg-muted)]">
+                        {isFlashcardMode ? `${itemCount} cards` : `${itemCount} questions`} {dateStr && `• ${dateStr}`}
+                      </p>
+                    </div>
+                  </button>
+
+                  {onDeleteSession && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteSession(session.id);
+                      }}
+                      title="Delete saved deck"
+                      aria-label="Delete saved deck"
+                      className="p-1.5 text-[var(--fg-muted)] hover:text-[var(--error)] transition-colors rounded-[var(--radius-sm)]"
+                    >
+                      <Trash2 size={14} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

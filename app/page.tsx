@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BookOpen, RotateCcw } from "lucide-react";
 import InputScreen from "@/components/InputScreen";
 import LoadingState from "@/components/LoadingState";
@@ -12,6 +12,13 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { generateDeck, type ClientErrorKind } from "@/lib/client";
 import type { Deck } from "@/lib/schema";
 import type { DeckMode } from "@/lib/prompt";
+import {
+  clearAllSessions,
+  deleteSession,
+  getSessions,
+  saveSession,
+  type SavedSession,
+} from "@/lib/sessions";
 
 type AppStatus = "idle" | "loading" | "success" | "empty" | "error";
 
@@ -22,7 +29,12 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [lastTopic, setLastTopic] = useState("");
   const [lastMode, setLastMode] = useState<DeckMode>("flashcards");
+  const [sessions, setSessions] = useState<SavedSession[]>([]);
   const latestRequestIdRef = useRef(0);
+
+  useEffect(() => {
+    setSessions(getSessions());
+  }, []);
 
   const handleGenerate = async (topic: string, mode: DeckMode) => {
     const requestId = ++latestRequestIdRef.current;
@@ -37,6 +49,8 @@ export default function Home() {
       if (result.ok) {
         setDeck(result.deck);
         setStatus("success");
+        saveSession(result.deck);
+        setSessions(getSessions());
       } else if (result.kind === "empty") {
         setDeck(null);
         setStatus("empty");
@@ -53,6 +67,23 @@ export default function Home() {
       setErrorMessage(err instanceof Error ? err.message : "Request failed");
       setStatus("error");
     }
+  };
+
+  const handleLoadSession = (session: SavedSession) => {
+    setDeck(session.deck);
+    setLastTopic(session.topic);
+    setLastMode(session.mode);
+    setStatus("success");
+  };
+
+  const handleDeleteSession = (id: string) => {
+    deleteSession(id);
+    setSessions(getSessions());
+  };
+
+  const handleClearSessions = () => {
+    clearAllSessions();
+    setSessions([]);
   };
 
   const handleRetry = () => {
@@ -95,7 +126,16 @@ export default function Home() {
       <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center overflow-y-auto overscroll-contain p-2 sm:p-4 lg:p-6">
         {status === "idle" && (
           <div className="enter-fade flex w-full items-center justify-center">
-            <InputScreen onGenerate={handleGenerate} isLoading={false} initialTopic={lastTopic} initialMode={lastMode} />
+            <InputScreen
+              onGenerate={handleGenerate}
+              isLoading={false}
+              initialTopic={lastTopic}
+              initialMode={lastMode}
+              savedSessions={sessions}
+              onLoadSession={handleLoadSession}
+              onDeleteSession={handleDeleteSession}
+              onClearSessions={handleClearSessions}
+            />
           </div>
         )}
         {status === "loading" && <div className="enter-fade flex w-full items-center justify-center"><LoadingState mode={lastMode} /></div>}
