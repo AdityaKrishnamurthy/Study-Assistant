@@ -8,6 +8,7 @@ export type SavedSession = {
   mode: DeckMode;
   deck: Deck;
   savedAt: string; // ISO date string
+  checkedIds?: string[]; // persisted checklist progress
 };
 
 const STORAGE_KEY = "study-assistant-sessions";
@@ -99,5 +100,19 @@ export function clearAllSessions(): void {
     window.localStorage.removeItem(STORAGE_KEY);
   } catch (err) {
     console.warn("Failed to clear sessions from localStorage:", err);
+  }
+}
+
+export function updateSessionProgress(sessionId: string, checkedIds: string[]): void {
+  if (!isLocalStorageAvailable()) return;
+
+  try {
+    const existing = getSessions();
+    const updated = existing.map((s) =>
+      s.id === sessionId ? { ...s, checkedIds } : s
+    );
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch (err) {
+    console.warn("Failed to update session progress:", err);
   }
 }

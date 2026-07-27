@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Check, CheckSquare, ListTodo, RotateCcw, Sparkles } from "lucide-react";
 
 /**
  * @typedef {import('@/lib/schema').Deck & { mode: 'checklist' }} ChecklistDeckType
- * @param {{ deck: ChecklistDeckType; onReset: () => void }} props
+ * @param {{ deck: ChecklistDeckType; onReset: () => void; initialCheckedIds?: string[]; onProgressChange?: (checkedIds: string[]) => void }} props
  */
-export default function ChecklistDeck({ deck, onReset }) {
-  const [checkedIds, setCheckedIds] = useState(/** @type {Set<string>} */ (new Set()));
+export default function ChecklistDeck({ deck, onReset, initialCheckedIds, onProgressChange }) {
+  const [checkedIds, setCheckedIds] = useState(
+    /** @type {Set<string>} */ (new Set(Array.isArray(initialCheckedIds) ? initialCheckedIds : []))
+  );
 
   if (!deck || !Array.isArray(deck.items)) return null;
 
@@ -26,12 +28,14 @@ export default function ChecklistDeck({ deck, onReset }) {
       } else {
         next.add(id);
       }
+      if (onProgressChange) onProgressChange(Array.from(next));
       return next;
     });
   };
 
   const handleResetChecklist = () => {
     setCheckedIds(new Set());
+    if (onProgressChange) onProgressChange([]);
   };
 
   return (

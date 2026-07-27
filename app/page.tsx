@@ -18,6 +18,7 @@ import {
   deleteSession,
   getSessions,
   saveSession,
+  updateSessionProgress,
   type SavedSession,
 } from "@/lib/sessions";
 
@@ -31,6 +32,8 @@ export default function Home() {
   const [lastTopic, setLastTopic] = useState("");
   const [lastMode, setLastMode] = useState<DeckMode>("flashcards");
   const [sessions, setSessions] = useState<SavedSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activeCheckedIds, setActiveCheckedIds] = useState<string[]>([]);
   const latestRequestIdRef = useRef(0);
 
   useEffect(() => {
@@ -50,7 +53,9 @@ export default function Home() {
       if (result.ok) {
         setDeck(result.deck);
         setStatus("success");
-        saveSession(result.deck);
+        const newId = saveSession(result.deck);
+        setActiveSessionId(newId);
+        setActiveCheckedIds([]);
         setSessions(getSessions());
       } else if (result.kind === "empty") {
         setDeck(null);
@@ -74,6 +79,8 @@ export default function Home() {
     setDeck(session.deck);
     setLastTopic(session.topic);
     setLastMode(session.mode);
+    setActiveSessionId(session.id);
+    setActiveCheckedIds(Array.isArray(session.checkedIds) ? session.checkedIds : []);
     setStatus("success");
   };
 
@@ -149,7 +156,18 @@ export default function Home() {
             ) : deck.mode === "quiz" ? (
               <QuizDeck deck={deck} onReset={handleReset} />
             ) : (
-              <ChecklistDeck deck={deck} onReset={handleReset} />
+              <ChecklistDeck
+                deck={deck}
+                onReset={handleReset}
+                initialCheckedIds={activeCheckedIds}
+                onProgressChange={(ids: string[]) => {
+                  setActiveCheckedIds(ids);
+                  if (activeSessionId) {
+                    updateSessionProgress(activeSessionId, ids);
+                    setSessions(getSessions());
+                  }
+                }}
+              />
             )}
           </div>
         )}
