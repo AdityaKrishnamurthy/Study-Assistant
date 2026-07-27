@@ -33,7 +33,7 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 
 ### 📝 Test Data
 You can copy sample study notes from this link for quick generation testing:
-👉 **[Sample Study Notes](https://katb.in/odavuharile)**
+👉 <a href="https://katb.in/sevuzugusiy" target="_blank" rel="noopener noreferrer"><strong>Sample Study Notes</strong></a>
 
 ### 3. Run Development Server
 ```bash

@@ -41,7 +41,7 @@ export function getSessions(): SavedSession[] {
       return (
         typeof s.id === "string" &&
         typeof s.topic === "string" &&
-        (s.mode === "flashcards" || s.mode === "quiz") &&
+        (s.mode === "flashcards" || s.mode === "quiz" || s.mode === "checklist") &&
         typeof s.deck === "object" &&
         s.deck !== null &&
         typeof s.savedAt === "string"
