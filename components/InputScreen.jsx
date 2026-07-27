@@ -151,7 +151,7 @@ export default function InputScreen({
       </form>
 
       {Array.isArray(savedSessions) && savedSessions.length > 0 && (
-        <div className="mt-8 border-t border-[var(--border)] pt-6">
+        <div className="mt-5 border-t border-[var(--border)] pt-4 sm:mt-8 sm:pt-6">
           <div className="mb-3 flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--fg-muted)]">
               <History size={14} aria-hidden="true" /> Recent Decks ({savedSessions.length})
@@ -167,7 +167,7 @@ export default function InputScreen({
             )}
           </div>
 
-          <div className="custom-scrollbar max-h-48 space-y-2 overflow-y-auto pr-1">
+          <div className="custom-scrollbar max-h-36 sm:max-h-48 space-y-2 overflow-y-auto pr-1">
             {savedSessions.map((session) => {
               const isFlashcardMode = session.mode === "flashcards";
               const isQuizMode = session.mode === "quiz";

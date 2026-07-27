@@ -124,9 +124,9 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 items-center justify-center overflow-y-auto overscroll-contain p-2 sm:p-4 lg:p-6">
+      <section className="custom-scrollbar mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-y-auto overscroll-contain p-2 sm:p-4 lg:p-6">
         {status === "idle" && (
-          <div className="enter-fade flex w-full items-center justify-center">
+          <div className="enter-fade my-auto flex w-full justify-center">
             <InputScreen
               onGenerate={handleGenerate}
               isLoading={false}
@@ -139,11 +139,11 @@ export default function Home() {
             />
           </div>
         )}
-        {status === "loading" && <div className="enter-fade flex w-full items-center justify-center"><LoadingState mode={lastMode} /></div>}
-        {status === "empty" && <div className="enter-fade flex w-full items-center justify-center"><EmptyState onRetry={handleRetry} onReset={handleReset} /></div>}
-        {status === "error" && <div className="enter-fade flex w-full items-center justify-center"><ErrorState kind={errorKind} customMessage={errorMessage} onRetry={handleRetry} onReset={handleReset} /></div>}
+        {status === "loading" && <div className="enter-fade my-auto flex w-full justify-center"><LoadingState mode={lastMode} /></div>}
+        {status === "empty" && <div className="enter-fade my-auto flex w-full justify-center"><EmptyState onRetry={handleRetry} onReset={handleReset} /></div>}
+        {status === "error" && <div className="enter-fade my-auto flex w-full justify-center"><ErrorState kind={errorKind} customMessage={errorMessage} onRetry={handleRetry} onReset={handleReset} /></div>}
         {status === "success" && deck && (
-          <div className="enter-fade flex w-full h-full min-h-0 items-center justify-center">
+          <div className="enter-fade my-auto flex w-full h-full min-h-0 items-center justify-center">
             {deck.mode === "flashcards" ? (
               <FlashcardDeck deck={deck} onReset={handleReset} />
             ) : deck.mode === "quiz" ? (
