@@ -1,3 +1,14 @@
+/**
+ * app/layout.tsx — Root Layout Component for Study Assistant
+ * 
+ * High-level purpose:
+ * - Configures global fonts using `next/font/google` CSS variables.
+ * - Imports base stylesheet (`globals.css`).
+ * - Defines page metadata (title, description) for SEO.
+ * - Wraps all page content inside <html> and <body> elements with global CSS variables and classes.
+ * - In development mode, dynamically injects the `react-grab` script for developer inspection on desktop localhost.
+ */
+
 import type { Metadata } from "next";
 
 import { DM_Serif_Display, Inter, JetBrains_Mono } from "next/font/google";

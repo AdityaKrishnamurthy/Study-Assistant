@@ -1,4 +1,13 @@
-// lib/sessions.ts — Client-side session persistence using localStorage
+/**
+ * lib/sessions.ts — Client-Side Session Persistence via LocalStorage
+ * 
+ * High-level purpose:
+ * - Persists generated decks to the browser's `localStorage` so users can revisit previous study sessions.
+ * - Caps stored sessions at 20 items using FIFO (first-in-first-out) eviction.
+ * - Manages checklist progress persistence (`checkedIds`).
+ * - Includes fallback safety checks for SSR / restricted browser storage environments.
+ */
+
 import type { Deck } from "./schema";
 import type { DeckMode } from "./prompt";
 

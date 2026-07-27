@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * components/QuizQuestion.jsx — Single Quiz Question Presentation Component
+ * 
+ * High-level purpose:
+ * - Renders a single multiple-choice question with option choice buttons (A, B, C, D...).
+ * - Highlights correct (green) and incorrect (red) choices once answered.
+ * - Displays an explanation box revealing why the correct answer is right.
+ * - Triggers `onAnswer` when an option is selected and `onNext` to advance to the next question.
+ */
+
 import React from "react";
 import { CircleCheck, CircleX, Info, ListChecks, RefreshCw } from "lucide-react";
 

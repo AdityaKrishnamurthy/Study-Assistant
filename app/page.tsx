@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * app/page.tsx — Main Application Controller & View Router
+ * 
+ * High-level purpose:
+ * - Manages application state lifecycle (`idle`, `loading`, `success`, `empty`, `error`).
+ * - Orchestrates AI deck generation via `lib/client.ts` with race-condition protection.
+ * - Handles local session persistence (saving generated decks, loading previous sessions, clearing sessions).
+ * - Dynamically renders the appropriate view based on `status` and `deck.mode` (Flashcards, Quiz, or Checklist).
+ */
+
 import React, { useEffect, useRef, useState } from "react";
 import { BookOpen, RotateCcw } from "lucide-react";
 import InputScreen from "@/components/InputScreen";

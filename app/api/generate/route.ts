@@ -1,12 +1,17 @@
-// app/api/generate/route.ts — The ONLY place that calls the LLM.
-// Supports multi-provider fallback chain:
-// 1. Groq (llama-3.3-70b-versatile)
-// 2. NVIDIA NIM (meta/llama-3.1-8b-instruct)
-// 3. Mistral (mistral-small-latest)
-// 4. Gemini Direct (gemini-2.0-flash)
-// 5. OpenRouter (google/gemini-2.5-flash)
-// Reads API keys from process.env (server-only).
-// Validates all model output through parseDeck before returning to client.
+/**
+ * app/api/generate/route.ts — Next.js Server-Side API Route for LLM Generation
+ * 
+ * High-level purpose:
+ * - Serves as the ONLY server-side boundary that communicates with LLM providers.
+ * - Multi-provider fallback chain:
+ *     1. Groq (llama-3.3-70b-versatile)
+ *     2. NVIDIA NIM (meta/llama-3.1-8b-instruct)
+ *     3. Mistral (mistral-small-latest)
+ *     4. Gemini Direct (gemini-2.0-flash)
+ *     5. OpenRouter (google/gemini-2.5-flash)
+ * - Reads API keys securely from server process.env (`.env.local`).
+ * - Validates model outputs using `parseDeck()` from `@/lib/schema` before responding to the client.
+ */
 
 import { NextRequest, NextResponse } from "next/server";
 import { parseDeck } from "@/lib/schema";

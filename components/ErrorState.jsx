@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * components/ErrorState.jsx — Error View Component
+ * 
+ * High-level purpose:
+ * - Rendered when deck generation fails (e.g. network failure, rate limit, provider error, invalid JSON).
+ * - Maps `ClientErrorKind` codes to clear, friendly user-facing messages.
+ * - Displays error code badge and action buttons (`Try again` and `Edit notes`).
+ */
+
 import React from "react";
 import { RefreshCw, RotateCcw, TriangleAlert } from "lucide-react";
 

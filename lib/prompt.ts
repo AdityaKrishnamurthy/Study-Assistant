@@ -1,6 +1,11 @@
-// lib/prompt.ts — Prompt construction for Gemini
-// Takes a topic and mode, returns the instruction prompt.
-// Includes a tiny few-shot example shape per DESIGN.md's prompting strategy.
+/**
+ * lib/prompt.ts — Prompt Construction for LLM Study Deck Generation
+ * 
+ * High-level purpose:
+ * - Constructs system prompts and few-shot JSON format examples for LLM generation.
+ * - Supports three study modes: `flashcards`, `quiz`, and `checklist`.
+ * - Instructs the LLM to output ONLY raw valid JSON (no markdown formatting, no extra commentary).
+ */
 
 export type DeckMode = "flashcards" | "quiz" | "checklist";
 

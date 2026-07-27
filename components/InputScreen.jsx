@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * components/InputScreen.jsx — Main Input Workspace & Saved Sessions Component
+ * 
+ * High-level purpose:
+ * - Collects study notes / topic text from the user via textarea.
+ * - Allows switching between 3 study formats: Flashcards, Quiz, and Checklist.
+ * - Validates input non-emptiness before submitting for AI generation.
+ * - Displays a list of saved sessions stored in localStorage, enabling quick loading, deletion, or clearing.
+ */
+
 import React, { useState } from "react";
 import { History, Layers, ListChecks, ListTodo, LoaderCircle, Trash2, TriangleAlert } from "lucide-react";
 

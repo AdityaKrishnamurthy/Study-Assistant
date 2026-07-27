@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * components/LoadingState.jsx — Animated Loading Indicator Component
+ * 
+ * High-level purpose:
+ * - Rendered during AI generation while request is pending.
+ * - Displays mode icon (Flashcards / Quiz / Checklist), animated spinner, and pulsing skeleton placeholders.
+ * - Features a 6-second timeout effect that toggles `isSlow` state to reassure the user if generation takes longer.
+ */
+
 import React, { useEffect, useState } from "react";
 import { Layers, ListChecks, LoaderCircle, RefreshCw } from "lucide-react";
 

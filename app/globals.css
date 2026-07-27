@@ -1,3 +1,12 @@
+/**
+ * app/globals.css — Global Stylesheet & Design System Tokens
+ * 
+ * High-level purpose:
+ * - Defines CSS custom properties (color tokens, typography variables, shadows) for light and dark themes.
+ * - Imports Tailwind CSS v4 directives.
+ * - Provides custom utility classes for 3D flashcard transforms, perspective, and animations.
+ */
+
 @import "tailwindcss";
 
 :root {

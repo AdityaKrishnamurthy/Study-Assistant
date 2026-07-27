@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * components/ThemeToggle.jsx — Light / Dark Theme Switcher
+ * 
+ * High-level purpose:
+ * - Toggles application theme between `light` and `dark` modes.
+ * - Mutates `document.documentElement.dataset.theme` attribute for instant CSS variable switching.
+ * - Reads and saves preference to `window.localStorage` ('theme') with fallback to system prefers-color-scheme.
+ */
+
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 

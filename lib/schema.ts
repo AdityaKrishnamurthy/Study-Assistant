@@ -1,6 +1,12 @@
-// lib/schema.ts — Data contract for Study Assistant
-// This is the single source of truth for the Deck shape.
-// The API route never trusts raw model output — it always goes through parseDeck.
+/**
+ * lib/schema.ts — Data Contract & Runtime Validator for Study Assistant
+ * 
+ * High-level purpose:
+ * - Serves as the single source of truth for the application's TypeScript data contract.
+ * - Provides lightweight, manual type-guard validators (no external dependencies like Zod).
+ * - Implements `parseDeck()` to sanitize raw LLM outputs (e.g., stripping ```json markdown fences)
+ *   and strictly validate shape and item non-emptiness before returning to client.
+ */
 
 // ─── Types ───────────────────────────────────────────────────────────
 

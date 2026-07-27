@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * components/QuizDeck.jsx — Multi-Phase Quiz Deck State Machine
+ * 
+ * High-level purpose:
+ * - Manages quiz lifecycle phases: `first-pass` -> `summary` -> `retest` -> `done`.
+ * - Tracks scores, selected choices, and missed question IDs (`wrongQuestionIds`).
+ * - Supports targeted retesting cycles for missed questions until mastery is achieved.
+ * - Delegates rendering of individual active questions to `QuizQuestion.jsx`.
+ */
+
 import React, { useState } from "react";
 import { CircleCheck, ListChecks, RefreshCw } from "lucide-react";
 import QuizQuestion from "./QuizQuestion";

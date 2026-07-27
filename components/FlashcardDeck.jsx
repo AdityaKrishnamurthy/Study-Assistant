@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * components/FlashcardDeck.jsx — Flashcard Deck Navigation Controller
+ * 
+ * High-level purpose:
+ * - Manages active card navigation (`currentIndex`, next/previous buttons).
+ * - Implements keyboard navigation shortcuts (`ArrowLeft`, `ArrowRight`, `Space` for flip).
+ * - Tracks marked "tricky" cards using a React `Set`.
+ * - Provides a "Tricky only" filter toggle mode to review bookmarked cards.
+ * - Renders progress bars, metadata headers, and keyboard shortcut legend.
+ */
+
 import React, { useCallback, useEffect, useState } from "react";
 import { BookmarkCheck, ChevronLeft, ChevronRight, FlipHorizontal2, Layers } from "lucide-react";
 import Flashcard from "./Flashcard";

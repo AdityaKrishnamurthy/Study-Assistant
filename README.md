@@ -1,8 +1,20 @@
 # Study Assistant — AI Flashcards & Quizzes
 
-Study Assistant is an interactive web application that transforms raw lecture notes or any topic prompt into structured, stateful **Flashcard Decks** and self-retrieval **Quiz Decks** with instant feedback and retest queues.
+Study Assistant is an interactive web application that transforms raw lecture notes or any topic prompt into structured, stateful **Flashcard Decks**, self-retrieval **Quiz Decks**, and interactive concept **Checklists** with instant feedback, progress tracking, and retest queues.
 
 Built with **Next.js (App Router)**, **TypeScript** data contracts, and **Tailwind CSS**, with a resilient 5-tier multi-provider AI backend supporting Groq (`llama-3.3-70b-versatile`), NVIDIA NIM (`meta/llama-3.1-8b-instruct`), Mistral (`mistral-small-latest`), Google Gemini Direct (`gemini-2.0-flash`), and OpenRouter (`google/gemini-2.5-flash`).
+
+---
+
+## 🎥 Demo Video (Desktop & Mobile)
+
+Watch the feature walkthrough demonstrating Desktop and Mobile viewports:
+
+<a href="https://youtu.be/tXTwr28cEvY" target="_blank" rel="noopener noreferrer">
+  <img src="https://i.ytimg.com/vi/tXTwr28cEvY/maxresdefault.jpg?v=2" alt="Study Assistant Demo - Desktop & Mobile Walkthrough" width="100%" />
+</a>
+
+👉 <a href="https://youtu.be/tXTwr28cEvY" target="_blank" rel="noopener noreferrer"><strong>Watch Demo Video on YouTube</strong></a>
 
 ---
 
@@ -32,7 +44,7 @@ OPENROUTER_API_KEY=your_openrouter_api_key_here
 > 5. `OpenRouter (google/gemini-2.5-flash)` (Fallback 4)
 
 ### 📝 Test Data
-You can copy sample study notes from this link for quick generation testing:
+You can copy sample study notes from this link for quick generation testing:  
 👉 <a href="https://katb.in/sevuzugusiy" target="_blank" rel="noopener noreferrer"><strong>Sample Study Notes</strong></a>
 
 ### 3. Run Development Server
@@ -49,7 +61,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Quiz Mode:** Enter a topic, select **Quiz Mode**, and take an interactive test with instant choice validation, immediate correct/incorrect feedback, and educational explanations.
 - **Checklist Mode:** Select **Checklist**, and generate a structured study checklist of key concepts. Check items off as you review them to track progress percentage.
 - **Retest Loop:** After finishing a quiz, hit **Retest Missed Questions** to cycle only missed questions until mastery is achieved.
-- **Recent Decks & Persistence:** Generated decks are automatically saved locally. Reload any recent deck instantly from the Input Screen without calling the AI API again.
+- **Recent Decks & Persistence:** Generated decks and checklist progress automatically save locally. Reload any recent deck instantly from the Input Screen without calling the AI API again.
 
 ---
 
@@ -62,32 +74,38 @@ This project was built using an **AI-Assisted Spec & Execution Methodology**:
 - **Resilient Fallback Architecture:** Designed with a 5-tier multi-provider fallback chain (`Groq` ➔ `NVIDIA` ➔ `Mistral` ➔ `Gemini Direct` ➔ `OpenRouter`) so client requests seamlessly failover if any provider hits rate limits or quota boundaries.
 - **UI Design System:** Built using specialized **frontend design skills** for modern, crafted visual aesthetics (tailored HSL color palette, DM Serif Display typography, custom scrollbars, and dynamic viewport constraints) rather than generic templates.
 - **Agent Governance & Workflow (`AGENTS.md`):** Strict agent execution rules were enforced via `AGENTS.md` to govern AI behavior, requiring pre-flight drift checks, strict schema adherence, zero silent fixes, and milestone-based git commits.
-- **Planning & Execution:** All work was executed in numbered milestone plans (`plans/001` through `plans/008`) following strict git workflow conventions.
+- **Planning & Execution:** All work was executed in numbered milestone plans (`plans/001` through `plans/012`) following strict git workflow conventions.
 
 ---
 
 ## ⏱️ Time Spent
 
-Total development time: **~5.2 hours** (315 minutes)
+Total development time: **~7.7 hours** (462 minutes)
 
 | Plan / Milestone | Task | Actual Time |
 |---|---|---|
 | **001** | Project setup, git exclusions, env config | ~15 min |
 | **002** | Schema data contract, prompt builder, API route & fallback | ~35 min |
 | **003** | Input screen & explicit 4-state UI machine | ~25 min |
-| **004** | Interactive 3D Flashcard viewer & keyboard shortcuts | ~15 min |
-| **005** | Interactive Quiz UI & Retest loop queue | ~20 min |
-| **006** | Mobile responsiveness polish & scroll bounds | ~15 min |
+| **004** | Interactive 3D Flashcard viewer & keyboard shortcuts | ~20 min |
+| **005** | Interactive Quiz UI & Retest loop queue | ~25 min |
+| **006** | Mobile responsiveness polish & scroll bounds | ~35 min |
 | **007** | README & submission audit | ~15 min |
-| **008** | Graph Paper UI revamp, theme toggle, and desktop grid layout | ~35 min |
-| **009** | Mobile touch fix, HMR allowed origins & viewport height constraint (`h-full`) | ~35 min |
-| **010** | 5-tier LLM provider integration (Groq, NVIDIA, Mistral), benchmarking & docs | ~35 min |
-| **011** | Save/reload sessions (`localStorage`) & Recent Decks UI | ~25 min |
-| **012** | Multiple block types: Checklist study format (`ChecklistDeck`) | ~45 min |
+| **008** | Graph Paper UI revamp, theme toggle, and desktop grid layout | ~65 min |
+| **009** | Mobile touch fix, HMR allowed origins & viewport height constraint (`h-full`) | ~60 min |
+| **010** | 5-tier LLM provider integration (Groq, NVIDIA, Mistral), benchmarking & docs | ~45 min |
+| **011** | Save/reload sessions (`localStorage`), Recent Decks UI & progress persistence | ~40 min |
+| **012** | Multiple block types: Checklist study format (`ChecklistDeck`) | ~52 min |
+| **013** | Demo video & documentation finalization | ~30 min |
 
 ---
 
 ## ⚠️ Known Limitations & Stretch Goals
 
-- **Session Persistence:** Decks live in React state during active sessions (stretch goal: `localStorage` save/reload).
-- **Streaming Output:** Decks generate atomically via validated JSON responses rather than token streaming to ensure 100% data contract integrity.
+- **Atomic Deck Generation vs. Token Streaming:** Decks generate atomically via validated JSON responses rather than token streaming to ensure 100% data contract integrity (`lib/schema.ts`).
+- **Multi-Turn Deck Refinement Loop:** Currently, changing topics generates a new deck from scratch rather than performing an in-place edit on existing cards.
+
+### ✅ Completed Stretch Goals
+- **Session Persistence (`localStorage`):** Decks and checklist completion progress automatically persist locally and reload instantly from the Recent Decks panel without calling the AI API again.
+- **Multiple Block Types (Checklist Mode):** Extended schema and prompt strategy to support 3 study modes: 3D Flashcards, Interactive Quizzes, and Concept Checklists.
+- **5-Tier AI Failover Chain:** Multi-provider failover backend across Groq, NVIDIA NIM, Mistral, Gemini Direct, and OpenRouter.

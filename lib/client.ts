@@ -1,5 +1,11 @@
-// lib/client.ts — API client for generating study decks
-// Implements client-side timeout (12s) via AbortController per DESIGN.md.
+/**
+ * lib/client.ts — Client-side API Client for Study Deck Generation
+ * 
+ * High-level purpose:
+ * - Provides `generateDeck()` function consumed by UI components (`app/page.tsx`).
+ * - Enforces a 12-second client-side timeout using `AbortController` and `AbortSignal.any`.
+ * - Handles HTTP response parsing and maps network/server errors into strongly-typed `ClientErrorKind` results.
+ */
 
 import type { Deck, DeckError } from "./schema";
 import type { DeckMode } from "./prompt";

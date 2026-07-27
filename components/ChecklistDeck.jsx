@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * components/ChecklistDeck.jsx — Interactive Study Checklist View
+ * 
+ * High-level purpose:
+ * - Displays a list of study checklist items with titles and descriptions.
+ * - Manages item checked states via a React `Set` state.
+ * - Computes progress percentage dynamically.
+ * - Invokes `onProgressChange` callback when items are checked to sync state with localStorage.
+ * - Renders a completion celebration banner when all items are checked.
+ */
+
 import React, { useCallback, useState } from "react";
 import { Check, CheckSquare, ListTodo, RotateCcw, Sparkles } from "lucide-react";
 

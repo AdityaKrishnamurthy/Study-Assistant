@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * components/Flashcard.jsx — 3D Flippable Flashcard Component
+ * 
+ * High-level purpose:
+ * - Renders a single interactive 3D flashcard with Front (Question) and Back (Answer) faces.
+ * - Utilizes CSS 3D transforms (`rotate-y-180`, `transform-style-3d`, `backface-hidden`) for flipping animations.
+ * - Supports keyboard activation (Space / Enter keys) and click-to-flip.
+ * - Includes a "Mark tricky" bookmarking toggle button to allow marking challenging cards.
+ */
+
 import React from "react";
 import { Bookmark, BookmarkCheck, FlipHorizontal2, Info } from "lucide-react";
 

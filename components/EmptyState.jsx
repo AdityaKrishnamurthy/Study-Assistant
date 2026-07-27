@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * components/EmptyState.jsx — Empty State View Component
+ * 
+ * High-level purpose:
+ * - Rendered when the LLM generates a valid response shape but contains zero study cards/questions/items.
+ * - Prompts the user to rephrase or expand their study notes with helpful copy.
+ * - Provides retry (re-attempt generation with existing topic) and reset (edit notes) buttons.
+ */
+
 import React from "react";
 import { Inbox, RefreshCw, RotateCcw } from "lucide-react";
 
