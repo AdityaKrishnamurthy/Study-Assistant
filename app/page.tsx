@@ -8,6 +8,7 @@ import ErrorState from "@/components/ErrorState";
 import EmptyState from "@/components/EmptyState";
 import FlashcardDeck from "@/components/FlashcardDeck";
 import QuizDeck from "@/components/QuizDeck";
+import ChecklistDeck from "@/components/ChecklistDeck";
 import ThemeToggle from "@/components/ThemeToggle";
 import { generateDeck, type ClientErrorKind } from "@/lib/client";
 import type { Deck } from "@/lib/schema";
@@ -143,7 +144,13 @@ export default function Home() {
         {status === "error" && <div className="enter-fade flex w-full items-center justify-center"><ErrorState kind={errorKind} customMessage={errorMessage} onRetry={handleRetry} onReset={handleReset} /></div>}
         {status === "success" && deck && (
           <div className="enter-fade flex w-full h-full min-h-0 items-center justify-center">
-            {deck.mode === "flashcards" ? <FlashcardDeck deck={deck} onReset={handleReset} /> : <QuizDeck deck={deck} onReset={handleReset} />}
+            {deck.mode === "flashcards" ? (
+              <FlashcardDeck deck={deck} onReset={handleReset} />
+            ) : deck.mode === "quiz" ? (
+              <QuizDeck deck={deck} onReset={handleReset} />
+            ) : (
+              <ChecklistDeck deck={deck} onReset={handleReset} />
+            )}
           </div>
         )}
       </section>

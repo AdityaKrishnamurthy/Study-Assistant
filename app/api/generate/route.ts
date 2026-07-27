@@ -15,7 +15,7 @@ import { buildPrompt, type DeckMode } from "@/lib/prompt";
 // ─── Request validation ──────────────────────────────────────────────
 
 function isValidMode(v: unknown): v is DeckMode {
-  return v === "flashcards" || v === "quiz";
+  return v === "flashcards" || v === "quiz" || v === "checklist";
 }
 
 // ─── Helper for OpenAI-compatible providers ──────────────────────────
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     if (!isValidMode(mode)) {
       return NextResponse.json(
-        { kind: "shape", message: "mode must be 'flashcards' or 'quiz'" },
+        { kind: "shape", message: "mode must be 'flashcards', 'quiz', or 'checklist'" },
         { status: 400 }
       );
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { History, Layers, ListChecks, LoaderCircle, Trash2, TriangleAlert } from "lucide-react";
+import { History, Layers, ListChecks, ListTodo, LoaderCircle, Trash2, TriangleAlert } from "lucide-react";
 
 /**
  * @typedef {import('@/lib/sessions').SavedSession} SavedSession
@@ -58,34 +58,48 @@ export default function InputScreen({
       <form onSubmit={handleSubmit} className="space-y-6">
         <fieldset>
           <legend className="mb-2 block text-xs font-semibold uppercase tracking-[var(--tracking-wide)] text-[var(--fg-muted)]">Study format</legend>
-          <div className="grid grid-cols-2 gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-muted)] p-1.5">
+          <div className="grid grid-cols-3 gap-1.5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-muted)] p-1.5">
             <button
               type="button"
               onClick={() => setMode("flashcards")}
               disabled={isLoading}
-              aria-pressed={isFlashcards}
-              className={`flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] px-3 text-sm font-semibold transition-colors duration-150 ${
-                isFlashcards
+              aria-pressed={mode === "flashcards"}
+              className={`flex min-h-11 items-center justify-center gap-1.5 rounded-[var(--radius-md)] px-2 text-xs sm:text-sm font-semibold transition-colors duration-150 ${
+                mode === "flashcards"
                   ? "bg-[var(--bg-card)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
                   : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
               }`}
             >
-              <Layers size={17} aria-hidden="true" />
+              <Layers size={16} aria-hidden="true" />
               Flashcards
             </button>
             <button
               type="button"
               onClick={() => setMode("quiz")}
               disabled={isLoading}
-              aria-pressed={!isFlashcards}
-              className={`flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-md)] px-3 text-sm font-semibold transition-colors duration-150 ${
-                !isFlashcards
+              aria-pressed={mode === "quiz"}
+              className={`flex min-h-11 items-center justify-center gap-1.5 rounded-[var(--radius-md)] px-2 text-xs sm:text-sm font-semibold transition-colors duration-150 ${
+                mode === "quiz"
                   ? "bg-[var(--bg-card)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
                   : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
               }`}
             >
-              <ListChecks size={17} aria-hidden="true" />
+              <ListChecks size={16} aria-hidden="true" />
               Quiz
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("checklist")}
+              disabled={isLoading}
+              aria-pressed={mode === "checklist"}
+              className={`flex min-h-11 items-center justify-center gap-1.5 rounded-[var(--radius-md)] px-2 text-xs sm:text-sm font-semibold transition-colors duration-150 ${
+                mode === "checklist"
+                  ? "bg-[var(--bg-card)] text-[var(--fg)] shadow-[var(--shadow-sm)]"
+                  : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
+              }`}
+            >
+              <ListTodo size={16} aria-hidden="true" />
+              Checklist
             </button>
           </div>
         </fieldset>
@@ -129,7 +143,9 @@ export default function InputScreen({
           {isLoading ? (
             <><LoaderCircle size={19} className="animate-spin" aria-hidden="true" /> Building your deck...</>
           ) : (
-            <>{isFlashcards ? <Layers size={19} aria-hidden="true" /> : <ListChecks size={19} aria-hidden="true" />} Create {isFlashcards ? "Flashcards" : "Quiz"}</>
+            <>
+              {mode === "flashcards" ? <Layers size={19} aria-hidden="true" /> : mode === "quiz" ? <ListChecks size={19} aria-hidden="true" /> : <ListTodo size={19} aria-hidden="true" />} Create {mode === "flashcards" ? "Flashcards" : mode === "quiz" ? "Quiz" : "Checklist"}
+            </>
           )}
         </button>
       </form>
@@ -154,9 +170,17 @@ export default function InputScreen({
           <div className="custom-scrollbar max-h-48 space-y-2 overflow-y-auto pr-1">
             {savedSessions.map((session) => {
               const isFlashcardMode = session.mode === "flashcards";
+              const isQuizMode = session.mode === "quiz";
               const itemCount = isFlashcardMode
                 ? session.deck?.cards?.length || 0
-                : session.deck?.questions?.length || 0;
+                : isQuizMode
+                ? session.deck?.questions?.length || 0
+                : session.deck?.items?.length || 0;
+              const modeText = isFlashcardMode
+                ? `${itemCount} cards`
+                : isQuizMode
+                ? `${itemCount} questions`
+                : `${itemCount} items`;
               const dateStr = session.savedAt
                 ? new Date(session.savedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })
                 : "";
@@ -172,14 +196,14 @@ export default function InputScreen({
                     className="flex flex-1 items-center gap-2.5 min-w-0 text-left"
                   >
                     <span className="flex size-7 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--bg-card)] text-[var(--primary)]">
-                      {isFlashcardMode ? <Layers size={14} aria-hidden="true" /> : <ListChecks size={14} aria-hidden="true" />}
+                      {isFlashcardMode ? <Layers size={14} aria-hidden="true" /> : isQuizMode ? <ListChecks size={14} aria-hidden="true" /> : <ListTodo size={14} aria-hidden="true" />}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-xs font-semibold text-[var(--fg)] group-hover:text-[var(--primary)] transition-colors">
                         {session.topic}
                       </p>
                       <p className="text-[11px] text-[var(--fg-muted)]">
-                        {isFlashcardMode ? `${itemCount} cards` : `${itemCount} questions`} {dateStr && `• ${dateStr}`}
+                        {modeText} {dateStr && `• ${dateStr}`}
                       </p>
                     </div>
                   </button>

@@ -18,9 +18,16 @@ export type QuizQuestion = {
   explanation: string;     // shown after answering
 };
 
+export type ChecklistItem = {
+  id: string;
+  title: string;
+  description: string;
+};
+
 export type Deck =
   | { mode: "flashcards"; topic: string; cards: Flashcard[] }
-  | { mode: "quiz"; topic: string; questions: QuizQuestion[] };
+  | { mode: "quiz"; topic: string; questions: QuizQuestion[] }
+  | { mode: "checklist"; topic: string; items: ChecklistItem[] };
 
 // ─── Result type ─────────────────────────────────────────────────────
 
@@ -66,6 +73,16 @@ function isQuizQuestion(v: unknown): v is QuizQuestion {
   return true;
 }
 
+function isChecklistItem(v: unknown): v is ChecklistItem {
+  if (typeof v !== "object" || v === null) return false;
+  const obj = v as Record<string, unknown>;
+  return (
+    isNonEmptyString(obj.id) &&
+    isNonEmptyString(obj.title) &&
+    isNonEmptyString(obj.description)
+  );
+}
+
 function isDeck(v: unknown): v is Deck {
   if (typeof v !== "object" || v === null) return false;
   const obj = v as Record<string, unknown>;
@@ -79,6 +96,11 @@ function isDeck(v: unknown): v is Deck {
   if (obj.mode === "quiz") {
     if (!Array.isArray(obj.questions)) return false;
     return obj.questions.every(isQuizQuestion);
+  }
+
+  if (obj.mode === "checklist") {
+    if (!Array.isArray(obj.items)) return false;
+    return obj.items.every(isChecklistItem);
   }
 
   return false;
@@ -129,6 +151,9 @@ export function parseDeck(raw: unknown): ParseDeckResult {
     return { ok: false, kind: "empty" };
   }
   if (parsed.mode === "quiz" && parsed.questions.length === 0) {
+    return { ok: false, kind: "empty" };
+  }
+  if (parsed.mode === "checklist" && parsed.items.length === 0) {
     return { ok: false, kind: "empty" };
   }
 

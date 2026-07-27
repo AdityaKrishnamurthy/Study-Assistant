@@ -2,7 +2,7 @@
 // Takes a topic and mode, returns the instruction prompt.
 // Includes a tiny few-shot example shape per DESIGN.md's prompting strategy.
 
-export type DeckMode = "flashcards" | "quiz";
+export type DeckMode = "flashcards" | "quiz" | "checklist";
 
 const FLASHCARD_EXAMPLE = JSON.stringify(
   {
@@ -34,13 +34,36 @@ const QUIZ_EXAMPLE = JSON.stringify(
   2
 );
 
+const CHECKLIST_EXAMPLE = JSON.stringify(
+  {
+    mode: "checklist",
+    topic: "Example Topic",
+    items: [
+      {
+        id: "1",
+        title: "Key concept name",
+        description: "What the student should understand or be able to explain.",
+      },
+    ],
+  },
+  null,
+  2
+);
+
 export function buildPrompt(topic: string, mode: DeckMode): string {
-  const example = mode === "flashcards" ? FLASHCARD_EXAMPLE : QUIZ_EXAMPLE;
+  const example =
+    mode === "flashcards"
+      ? FLASHCARD_EXAMPLE
+      : mode === "quiz"
+      ? QUIZ_EXAMPLE
+      : CHECKLIST_EXAMPLE;
 
   const modeInstructions =
     mode === "flashcards"
       ? `Generate a set of 5–15 flashcards about the given topic. Each card has a "front" (question or term) and a "back" (answer or definition).`
-      : `Generate a set of 5–15 multiple-choice quiz questions about the given topic. Each question must have 4 choices, exactly one correct answer identified by "correctIndex" (0-based index into the choices array), and a short explanation of why the correct answer is right.`;
+      : mode === "quiz"
+      ? `Generate a set of 5–15 multiple-choice quiz questions about the given topic. Each question must have 4 choices, exactly one correct answer identified by "correctIndex" (0-based index into the choices array), and a short explanation of why the correct answer is right.`
+      : `Generate a set of 5–15 study checklist items about the given topic. Each item has a "title" (short concept name) and a "description" (what the student should understand or be able to demonstrate).`;
 
   return `You are a study-material generator. ${modeInstructions}
 
