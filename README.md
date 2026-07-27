@@ -47,7 +47,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - **Flashcard Mode:** Enter any topic or paste study notes, toggle to **Flashcards**, and click **Generate**. Tap/click cards or press `Space` to flip between question and answer. Use `←` / `→` arrows to navigate. Bookmark tricky cards with ⭐ for focused review.
 - **Quiz Mode:** Enter a topic, select **Quiz Mode**, and take an interactive test with instant choice validation, immediate correct/incorrect feedback, and educational explanations.
+- **Checklist Mode:** Select **Checklist**, and generate a structured study checklist of key concepts. Check items off as you review them to track progress percentage.
 - **Retest Loop:** After finishing a quiz, hit **Retest Missed Questions** to cycle only missed questions until mastery is achieved.
+- **Recent Decks & Persistence:** Generated decks are automatically saved locally. Reload any recent deck instantly from the Input Screen without calling the AI API again.
 
 ---
 
@@ -66,7 +68,7 @@ This project was built using an **AI-Assisted Spec & Execution Methodology**:
 
 ## ⏱️ Time Spent
 
-Total development time: **~4.5 hours** (270 minutes)
+Total development time: **~5.2 hours** (315 minutes)
 
 | Plan / Milestone | Task | Actual Time |
 |---|---|---|
@@ -81,6 +83,7 @@ Total development time: **~4.5 hours** (270 minutes)
 | **009** | Mobile touch fix, HMR allowed origins & viewport height constraint (`h-full`) | ~35 min |
 | **010** | 5-tier LLM provider integration (Groq, NVIDIA, Mistral), benchmarking & docs | ~35 min |
 | **011** | Save/reload sessions (`localStorage`) & Recent Decks UI | ~25 min |
+| **012** | Multiple block types: Checklist study format (`ChecklistDeck`) | ~45 min |
 
 ---
 
