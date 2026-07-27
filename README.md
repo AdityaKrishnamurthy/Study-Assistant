@@ -66,7 +66,7 @@ This project was built using an **AI-Assisted Spec & Execution Methodology**:
 
 ## ⏱️ Time Spent
 
-Total development time: **~4.1 hours** (245 minutes)
+Total development time: **~4.5 hours** (270 minutes)
 
 | Plan / Milestone | Task | Actual Time |
 |---|---|---|
@@ -80,6 +80,7 @@ Total development time: **~4.1 hours** (245 minutes)
 | **008** | Graph Paper UI revamp, theme toggle, and desktop grid layout | ~35 min |
 | **009** | Mobile touch fix, HMR allowed origins & viewport height constraint (`h-full`) | ~35 min |
 | **010** | 5-tier LLM provider integration (Groq, NVIDIA, Mistral), benchmarking & docs | ~35 min |
+| **011** | Save/reload sessions (`localStorage`) & Recent Decks UI | ~25 min |
 
 ---
 
