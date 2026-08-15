@@ -70,6 +70,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 This project was built using an **AI-Assisted Spec & Execution Methodology**:
 
 - **System Prompting & Data Safety:** All LLM calls pass through `app/api/generate/route.ts` (server-side only). No API keys ship to client code.
+- **Inbound Rate Limiting (`lib/ratelimit.ts`):** Zero-dependency in-memory sliding window rate limiter protects server resources and 5-tier provider keys against automated abuse, scraping bots, and spam (5 req/min per IP with standard HTTP 429 and `Retry-After` headers).
 - **Strict Data Contract (`lib/schema.ts`):** The application never trusts raw LLM outputs. Model outputs are validated against the `Deck` data contract, code fences (\`\`\`json) are stripped, and errors are categorized into tagged `kind` states (`parse`, `shape`, `empty`, `rate_limit`, `network`).
 - **Resilient Fallback Architecture:** Designed with a 5-tier multi-provider fallback chain (`Groq` ➔ `NVIDIA` ➔ `Mistral` ➔ `Gemini Direct` ➔ `OpenRouter`) so client requests seamlessly failover if any provider hits rate limits or quota boundaries.
 - **UI Design System:** Built using specialized **frontend design skills** for modern, crafted visual aesthetics (tailored HSL color palette, DM Serif Display typography, custom scrollbars, and dynamic viewport constraints) rather than generic templates.
@@ -106,6 +107,7 @@ Total development time: **~7.7 hours** (462 minutes)
 - **Multi-Turn Deck Refinement Loop:** Currently, changing topics generates a new deck from scratch rather than performing an in-place edit on existing cards.
 
 ### ✅ Completed Stretch Goals
+- **API Abuse Prevention & Rate Limiting:** Built-in in-memory sliding window rate limiter protects provider API keys and quotas from spam and scraping bots with HTTP 429 throttling and `Retry-After` headers.
 - **Session Persistence (`localStorage`):** Decks and checklist completion progress automatically persist locally and reload instantly from the Recent Decks panel without calling the AI API again.
 - **Multiple Block Types (Checklist Mode):** Extended schema and prompt strategy to support 3 study modes: 3D Flashcards, Interactive Quizzes, and Concept Checklists.
 - **5-Tier AI Failover Chain:** Multi-provider failover backend across Groq, NVIDIA NIM, Mistral, Gemini Direct, and OpenRouter.

@@ -3,6 +3,7 @@
  * 
  * High-level purpose:
  * - Serves as the ONLY server-side boundary that communicates with LLM providers.
+ * - Inbound sliding-window rate limiter protects provider API keys & quotas against abusive spam.
  * - Multi-provider fallback chain:
  *     1. Groq (openai/gpt-oss-120b)
  *     2. NVIDIA NIM (meta/llama-3.1-8b-instruct)
@@ -16,6 +17,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseDeck } from "@/lib/schema";
 import { buildPrompt, type DeckMode } from "@/lib/prompt";
+import { checkRateLimit, getRateLimitHeaders } from "@/lib/ratelimit";
 
 // ─── Request validation ──────────────────────────────────────────────
 
@@ -184,6 +186,24 @@ async function callLLM(prompt: string): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. IP-level Rate Limit check to protect API keys & quotas
+    const rateLimit = checkRateLimit(request);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          kind: "rate_limit",
+          message: `Too many requests. Please wait ${rateLimit.retryAfterSeconds}s before generating again.`,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds),
+            ...getRateLimitHeaders(rateLimit),
+          },
+        }
+      );
+    }
+
     // Validate at least one API key exists
     if (
       !process.env.GROQ_API_KEY &&
@@ -234,7 +254,10 @@ export async function POST(request: NextRequest) {
     const result = parseDeck(rawText);
 
     if (result.ok) {
-      return NextResponse.json(result.deck, { status: 200 });
+      return NextResponse.json(result.deck, {
+        status: 200,
+        headers: getRateLimitHeaders(rateLimit),
+      });
     }
 
     // Log raw response for debugging
