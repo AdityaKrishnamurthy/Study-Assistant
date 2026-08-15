@@ -2,7 +2,7 @@
 
 Study Assistant is an interactive web application that transforms raw lecture notes or any topic prompt into structured, stateful **Flashcard Decks**, self-retrieval **Quiz Decks**, and interactive concept **Checklists** with instant feedback, progress tracking, and retest queues.
 
-Built with **Next.js (App Router)**, **TypeScript** data contracts, and **Tailwind CSS**, with a resilient 5-tier multi-provider AI backend supporting Groq (`llama-3.3-70b-versatile`), NVIDIA NIM (`meta/llama-3.1-8b-instruct`), Mistral (`mistral-small-latest`), Google Gemini Direct (`gemini-2.0-flash`), and OpenRouter (`google/gemini-2.5-flash`).
+Built with **Next.js (App Router)**, **TypeScript** data contracts, and **Tailwind CSS**, with a resilient 5-tier multi-provider AI backend supporting Groq (`openai/gpt-oss-120b`), NVIDIA NIM (`meta/llama-3.1-8b-instruct`), Mistral (`mistral-small-latest`), Google Gemini Direct (`gemini-2.0-flash`), and OpenRouter (`google/gemini-2.5-flash`).
 
 ---
 
@@ -37,7 +37,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 > **Note:** At least one valid API key is required. The server route uses a 5-tier automatic fallback chain:
-> 1. `Groq (llama-3.3-70b-versatile)` (Primary — ~200ms latency)
+> 1. `Groq (openai/gpt-oss-120b)` (Primary — ~1s latency)
 > 2. `NVIDIA NIM (meta/llama-3.1-8b-instruct)` (Fallback 1)
 > 3. `Mistral (mistral-small-latest)` (Fallback 2)
 > 4. `Gemini Direct (gemini-2.0-flash)` (Fallback 3)

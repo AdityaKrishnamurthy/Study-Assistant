@@ -4,7 +4,7 @@
  * High-level purpose:
  * - Serves as the ONLY server-side boundary that communicates with LLM providers.
  * - Multi-provider fallback chain:
- *     1. Groq (llama-3.3-70b-versatile)
+ *     1. Groq (openai/gpt-oss-120b)
  *     2. NVIDIA NIM (meta/llama-3.1-8b-instruct)
  *     3. Mistral (mistral-small-latest)
  *     4. Gemini Direct (gemini-2.0-flash)
@@ -64,13 +64,13 @@ async function callOpenAICompatible(
   return text;
 }
 
-// ─── 1. Groq (llama-3.3-70b-versatile) ────────────────────────────────
+// ─── 1. Groq (openai/gpt-oss-120b) ───────────────────────────────────
 
 async function callGroq(prompt: string, apiKey: string): Promise<string> {
   return callOpenAICompatible(
     "https://api.groq.com/openai/v1/chat/completions",
     apiKey,
-    "llama-3.3-70b-versatile",
+    "openai/gpt-oss-120b",
     prompt,
     "GROQ"
   );
